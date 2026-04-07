@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KYRA NUNEZ — Project Manager & Delivery Lead</title>
+  <meta name="description" content="Kyra Nunez Gonzalez — Integrating critical thinking with professional practice. Project Manager, Delivery Lead, Operations Strategist.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+       ═══════════════════════════════════════════ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0C0C0C;
+      --text: #F5F5F0;
+      --text-secondary: #999999;
+      --accent: #D4D4C8;
+      --border: #1E1E1E;
+      --border-hover: #333333;
+      --spacing-xl: clamp(80px, 10vw, 140px);
+      --spacing-lg: clamp(48px, 6vw, 80px);
+      --spacing-md: clamp(24px, 3vw, 40px);
+      --spacing-sm: 16px;
+      --spacing-xs: 8px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 400;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    /* ═══════════════════════════════════════════
+       TYPOGRAPHY SYSTEM
+       ═══════════════════════════════════════════ */
+    .heading-xl {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: clamp(64px, 12vw, 160px);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+
+    .heading-lg {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: clamp(36px, 5vw, 64px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    .heading-md {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: clamp(20px, 2.5vw, 32px);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .body-text {
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(15px, 1.2vw, 18px);
+      line-height: 1.65;
+      letter-spacing: -0.0625em;
+      color: #444444;
+      font-weight: 400;
+    }
+
+    [data-theme="light"] .body-text {
+      color: #444444;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    /* ═══════════════════════════════════════════
+       LAYOUT
+       ═══════════════════════════════════════════ */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 clamp(24px, 4vw, 64px);
+    }
+
+    /* ═══════════════════════════════════════════
+       NAVIGATION
+       ═══════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 24px 0;
+      transition: background 0.4s ease, backdrop-filter 0.4s ease;
+    }
+
+    nav.scrolled {
+      background: rgba(12, 12, 12, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--text);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-social {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .nav-social a {
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .nav-social a:hover {
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+       ═══════════════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 120px;
+      padding-bottom: var(--spacing-xl);
+      position: relative;
+    }
+
+    .hero-top {
+      position: relative;
+      margin-bottom: clamp(40px, 5vw, 72px);
+    }
+
+    .hero-name {
+      margin-bottom: 0;
+    }
+
+    .hero-name span {
+      display: block;
+    }
+
+    .hero-photo {
+      position: absolute;
+      top: clamp(0px, 2vw, 20px);
+      right: 0;
+      width: clamp(100px, 12vw, 180px);
+      height: clamp(100px, 12vw, 180px);
+      border-radius: 50%;
+      overflow: hidden;
+      background: #222;
+    }
+
+    .hero-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--spacing-lg);
+    }
+
+    .hero-bottom-left {
+      flex-shrink: 0;
+    }
+
+    .hero-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(14px, 1.1vw, 16px);
+      font-weight: 400;
+      color: var(--text);
+      transition: opacity 0.3s ease;
+      border: none;
+      padding: 0;
+      background: none;
+    }
+
+    .hero-email:hover {
+      opacity: 0.6;
+    }
+
+    .hero-email .copy-icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
+    }
+
+    .hero-email:hover .copy-icon {
+      opacity: 1;
+    }
+
+    .hero-email .copied-text {
+      display: none;
+      color: var(--text);
+    }
+
+    .hero-intro {
+      max-width: 520px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: clamp(22px, 2.2vw, 32px);
+      font-weight: 400;
+      line-height: 1.35;
+      color: var(--text);
+      text-align: right;
+    }
+
+    @media (max-width: 900px) {
+      .hero-bottom {
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+
+      .hero-intro {
+        text-align: left;
+        max-width: 100%;
+      }
+
+      .hero-photo {
+        width: 80px;
+        height: 80px;
+        top: 0;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTIONS
+       ═══════════════════════════════════════════ */
+    section {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: var(--spacing-lg);
+      padding-bottom: var(--spacing-sm);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: clamp(36px, 5vw, 64px);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .section-link {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .section-link:hover {
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════
+       ABOUT
+       ═══════════════════════════════════════════ */
+    .about-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+    }
+
+    .about-left .body-text {
+      max-width: 520px;
+    }
+
+    .about-left .body-text + .body-text {
+      margin-top: 1.5em;
+    }
+
+    .about-skills {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .skill-group h4 {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill-tag {
+      padding: 6px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .skill-tag:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════
+       WORK / PROJECTS — ACCORDION
+       ═══════════════════════════════════════════ */
+    .project-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-header {
+      display: grid;
+      grid-template-columns: 60px 1fr auto;
+      align-items: center;
+      padding: clamp(24px, 3vw, 40px) 0;
+      cursor: pointer;
+      transition: opacity 0.3s ease;
+      gap: 24px;
+    }
+
+    .project-header:hover {
+      opacity: 0.7;
+    }
+
+    .project-number {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+      color: var(--text-secondary);
+    }
+
+    .project-title {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: clamp(24px, 3vw, 42px);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .project-toggle {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .project-item.active .project-toggle {
+      transform: rotate(45deg);
+      border-color: var(--border-hover);
+    }
+
+    .project-toggle svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-secondary);
+    }
+
+    .project-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.7s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.5s ease;
+      opacity: 0;
+    }
+
+    .project-item.active .project-body {
+      opacity: 1;
+    }
+
+    .project-body-inner {
+      padding-bottom: clamp(40px, 5vw, 72px);
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 12px;
+      margin-bottom: var(--spacing-md);
+      flex-wrap: wrap;
+    }
+
+    .project-tag {
+      padding: 4px 14px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .project-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+      align-items: start;
+    }
+
+    .project-image-wrapper {
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      aspect-ratio: 4/3;
+      background: #161616;
+    }
+
+    .project-image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .project-image-wrapper:hover img {
+      transform: scale(1.03);
+    }
+
+    .project-image-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    }
+
+    .project-image-label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .project-details {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .project-description {
+      max-width: 480px;
+    }
+
+    /* KPI GRID — large bold numbers */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    .kpi-card {
+      background: #141414;
+      padding: clamp(24px, 3vw, 40px);
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    }
+
+    .kpi-number {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      font-size: clamp(40px, 5vw, 72px);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .kpi-label {
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* ═══════════════════════════════════════════
+       CONTACT / FOOTER
+       ═══════════════════════════════════════════ */
+    .contact {
+      padding: var(--spacing-xl) 0;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+    }
+
+    .contact-left .body-text {
+      max-width: 460px;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .contact-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 32px;
+      border: 1px solid var(--text);
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text);
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .contact-cta:hover {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .contact-cta svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .contact-cta:hover svg {
+      transform: translateX(4px);
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .contact-item .label {
+      margin-bottom: 6px;
+    }
+
+    .contact-item a,
+    .contact-item p {
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 300;
+    }
+
+    .contact-item a {
+      transition: color 0.3s ease;
+    }
+
+    .contact-item a:hover {
+      color: var(--text-secondary);
+    }
+
+    /* Footer bottom */
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      margin-top: var(--spacing-xl);
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-bottom p {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-social a {
+      font-size: 12px;
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .footer-social a:hover {
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════
+       SCROLL ANIMATIONS
+       ═══════════════════════════════════════════ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+                  transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+
+    /* Hero stagger */
+    .hero .reveal:nth-child(1) { transition-delay: 0.1s; }
+    .hero .reveal:nth-child(2) { transition-delay: 0.25s; }
+    .hero .reveal:nth-child(3) { transition-delay: 0.4s; }
+    .hero .reveal:nth-child(4) { transition-delay: 0.55s; }
+
+    /* KPI counter animation */
+    .kpi-number[data-count] {
+      transition: none;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+       ═══════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .about-content,
+      .project-layout,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-social {
+        display: none;
+      }
+
+      .project-header {
+        grid-template-columns: 40px 1fr auto;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .nav-links {
+        gap: 20px;
+      }
+
+      .nav-links a {
+        font-size: 11px;
+      }
+
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-header {
+        grid-template-columns: 1fr auto;
+      }
+
+      .project-number {
+        display: none;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       HORIZONTAL RULE DIVIDER
+       ═══════════════════════════════════════════ */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ═══════════════════════════════════════════
+       SMOOTH CURSOR (custom)
+       ═══════════════════════════════════════════ */
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--text);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: difference;
+      transition: transform 0.15s ease;
+      display: none;
+    }
+
+    @media (hover: hover) {
+      .cursor-dot {
+        display: block;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       LIGHT MODE
+       ═══════════════════════════════════════════ */
+    [data-theme="light"] {
+      --bg: #F5F5F0;
+      --text: #0C0C0C;
+      --text-secondary: #666666;
+      --border: #E0E0E0;
+      --border-hover: #CCCCCC;
+    }
+
+    [data-theme="light"] ::selection {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    [data-theme="light"] nav.scrolled {
+      background: rgba(245, 245, 240, 0.85);
+    }
+
+    [data-theme="light"] .hero-email:hover {
+      background: rgba(0, 0, 0, 0.03);
+    }
+
+    [data-theme="light"] .kpi-card {
+      background: #EBEBEB;
+    }
+
+    [data-theme="light"] .kpi-card::before {
+      background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent);
+    }
+
+    [data-theme="light"] .project-image-wrapper {
+      background: #E8E8E8;
+    }
+
+    body {
+      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* ═══════════════════════════════════════════
+       THEME TOGGLE
+       ═══════════════════════════════════════════ */
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      transition: border-color 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--border-hover);
+    }
+
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-secondary);
+      fill: none;
+      transition: stroke 0.3s ease;
+    }
+
+    .theme-toggle:hover svg {
+      stroke: var(--text);
+    }
+
+    .theme-toggle .icon-moon { display: none; }
+    .theme-toggle .icon-sun  { display: block; }
+
+    [data-theme="light"] .theme-toggle .icon-moon { display: block; }
+    [data-theme="light"] .theme-toggle .icon-sun  { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursor"></div>
+
+  <!-- ═══════════ NAVIGATION ═══════════ -->
+  <nav id="navbar">
+    <div class="container">
+      <a href="#" class="nav-logo">Kyra</a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <ul class="nav-social">
+        <li>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <svg class="icon-sun" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="icon-moon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </li>
+        <li><a href="https://www.linkedin.com/in/kyra-n%C3%BA%C3%B1ez-gonz%C3%A1lez-5ab822146" target="_blank" rel="noopener">LinkedIn</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-top reveal">
+        <div class="hero-name">
+          <span class="heading-xl">KYRA</span>
+          <span class="heading-xl">NUNEZ</span>
+        </div>
+        <div class="hero-photo">
+          <img src="kyra.jpg" alt="Kyra Nunez">
+        </div>
+      </div>
+
+      <div class="hero-bottom reveal">
+        <div class="hero-bottom-left">
+          <div class="hero-email" id="emailCopy" role="button" tabindex="0" aria-label="Copy email address">
+            <span class="email-text">nkyra95@gmail.com</span>
+            <span class="copied-text">Copied!</span>
+            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </div>
+        </div>
+
+        <p class="hero-intro">
+          A project manager and delivery lead specializing in operational efficiency, team leadership and data-driven strategy — based in Mexico, open to remote.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ABOUT ═══════════ -->
+  <section id="about">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">about.</h2>
+      </div>
+
+      <div class="about-content">
+        <div class="about-left">
+          <p class="body-text reveal">
+            Hello, my name is Kyra and I'm here to bring success to your project by integrating critical thinking with professional practice.
+          </p>
+          <p class="body-text reveal">
+            Skilled in team leadership, data analysis, and staff management, I have focused my practice on improving operational efficiency and quality of results.
+          </p>
+          <p class="body-text reveal">
+            Holding a master's degree in social sciences, I am also experienced in academia and style editing, combining communication and writing skills to achieve your project goals.
+          </p>
+        </div>
+
+        <div class="about-skills reveal">
+          <div class="skill-group">
+            <h4>Management</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">Team Leadership</span>
+              <span class="skill-tag">Staff Management</span>
+              <span class="skill-tag">Change Management</span>
+              <span class="skill-tag">Operations</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Strategy</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">Data Analysis</span>
+              <span class="skill-tag">KPI Development</span>
+              <span class="skill-tag">SOP Creation</span>
+              <span class="skill-tag">Reporting</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h4>Communication</h4>
+            <div class="skill-tags">
+              <span class="skill-tag">Copy Editing</span>
+              <span class="skill-tag">Academic Writing</span>
+              <span class="skill-tag">Multilingual</span>
+              <span class="skill-tag">QA & Training</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ WORK ═══════════ -->
+  <section id="work">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">work.</h2>
+      </div>
+
+      <div class="project-list">
+
+        <!-- PROJECT 01 — LASERAWAY -->
+        <div class="project-item reveal">
+          <div class="project-header" role="button" tabindex="0" aria-expanded="false">
+            <span class="project-number">01</span>
+            <h3 class="project-title">LaserAway</h3>
+            <div class="project-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="project-body-inner">
+              <div class="project-meta">
+                <span class="project-tag">Client Services</span>
+                <span class="project-tag">Operations Lead</span>
+                <span class="project-tag">Data & Reporting</span>
+                <span class="project-tag">2021 — 2024</span>
+              </div>
+
+              <div class="project-layout">
+                <div class="project-image-wrapper">
+                  <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80" alt="Team collaboration and management" loading="lazy">
+                  <div class="project-image-overlay">
+                    <span class="project-image-label">Client Experience & Operations</span>
+                  </div>
+                </div>
+
+                <div class="project-details">
+                  <div class="kpi-grid">
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="3" data-suffix="x">0x</div>
+                      <div class="kpi-label">Productivity<br>increase</div>
+                    </div>
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="40" data-suffix="+">0+</div>
+                      <div class="kpi-label">Agents<br>managed</div>
+                    </div>
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="150" data-suffix="+">0+</div>
+                      <div class="kpi-label">Clinics<br>supported</div>
+                    </div>
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="3">0</div>
+                      <div class="kpi-label">Promotions<br>earned</div>
+                    </div>
+                  </div>
+
+                  <p class="body-text project-description">
+                    Managed the Client Experience team across three languages, implementing strategies that tripled productivity. Created KPIs and SOPs, supervised 15-hour workday schedules, and delivered daily, weekly and monthly performance reports to site and client stakeholders.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECT 02 — OTRA OPORTUNIDAD -->
+        <div class="project-item reveal">
+          <div class="project-header" role="button" tabindex="0" aria-expanded="false">
+            <span class="project-number">02</span>
+            <h3 class="project-title">Otra Oportunidad, A.C.</h3>
+            <div class="project-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="project-body-inner">
+              <div class="project-meta">
+                <span class="project-tag">Non-Profit</span>
+                <span class="project-tag">Process Systematization</span>
+                <span class="project-tag">Operations Manual</span>
+              </div>
+
+              <div class="project-layout">
+                <div class="project-image-wrapper">
+                  <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80" alt="Professional woman working on documentation" loading="lazy">
+                  <div class="project-image-overlay">
+                    <span class="project-image-label">Comprehensive Care Model</span>
+                  </div>
+                </div>
+
+                <div class="project-details">
+                  <div class="kpi-grid">
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="5" data-suffix=" mo">0 mo</div>
+                      <div class="kpi-label">Record<br>delivery time</div>
+                    </div>
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="4">0</div>
+                      <div class="kpi-label">Departments<br>integrated</div>
+                    </div>
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="1">0</div>
+                      <div class="kpi-label">Unified operations<br>manual</div>
+                    </div>
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-count="100" data-suffix="%">0%</div>
+                      <div class="kpi-label">Holistic<br>implementation</div>
+                    </div>
+                  </div>
+
+                  <p class="body-text project-description">
+                    Systematized a Comprehensive Care Model for a civil association supporting women victims of domestic violence. Integrated legal, educational, psychological and social work areas into one unified Operations Manual delivered in a record 5 months.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /project-list -->
+    </div>
+  </section>
+
+  <!-- ═══════════ CONTACT ═══════════ -->
+  <section id="contact" class="contact">
+    <div class="container">
+      <div class="section-header reveal">
+        <h2 class="section-title">contact.</h2>
+      </div>
+
+      <div class="contact-grid">
+        <div class="contact-left reveal">
+          <p class="body-text">
+            I'm always open to discussing new projects, operational challenges, or opportunities to collaborate and drive results together.
+          </p>
+          <a href="mailto:nkyra95@gmail.com" class="contact-cta">
+            Get in touch
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </a>
+        </div>
+
+        <div class="contact-details reveal">
+          <div class="contact-item">
+            <p class="label">Phone</p>
+            <a href="tel:+524445811784">+52 (444) 581 1784</a>
+          </div>
+          <div class="contact-item">
+            <p class="label">Email</p>
+            <a href="mailto:nkyra95@gmail.com">nkyra95@gmail.com</a>
+          </div>
+          <div class="contact-item">
+            <p class="label">LinkedIn</p>
+            <a href="https://www.linkedin.com/in/kyra-n%C3%BA%C3%B1ez-gonz%C3%A1lez-5ab822146" target="_blank" rel="noopener">Kyra Nunez Gonzalez</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer-bottom">
+        <p>&copy; 2026 Kyra Nunez Gonzalez</p>
+        <ul class="footer-social">
+          <li><a href="https://www.linkedin.com/in/kyra-n%C3%BA%C3%B1ez-gonz%C3%A1lez-5ab822146" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="mailto:nkyra95@gmail.com">Email</a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ JAVASCRIPT ═══════════ -->
+  <script>
+    // ——— Smooth custom cursor ———
+    const cursor = document.getElementById('cursor');
+    let cursorX = 0, cursorY = 0, currentX = 0, currentY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      cursorX = e.clientX;
+      cursorY = e.clientY;
+    });
+
+    function animateCursor() {
+      currentX += (cursorX - currentX) * 0.15;
+      currentY += (cursorY - currentY) * 0.15;
+      cursor.style.transform = `translate(${currentX - 4}px, ${currentY - 4}px)`;
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // ——— Navbar scroll effect ———
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    // ——— Scroll reveal ———
+    const revealElements = document.querySelectorAll('.reveal');
+
+    // Trigger hero elements immediately on load with stagger
+    document.querySelectorAll('.hero .reveal').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 100 + i * 150);
+    });
+
+    // IntersectionObserver for remaining sections
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.08,
+      rootMargin: '0px 0px -20px 0px'
+    });
+
+    revealElements.forEach(el => {
+      if (!el.closest('.hero')) {
+        revealObserver.observe(el);
+      }
+    });
+
+    // ——— Project Accordion ———
+    document.querySelectorAll('.project-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.parentElement;
+        const body = item.querySelector('.project-body');
+        const isActive = item.classList.contains('active');
+
+        // Close all
+        document.querySelectorAll('.project-item.active').forEach(openItem => {
+          openItem.classList.remove('active');
+          openItem.querySelector('.project-body').style.maxHeight = '0';
+          openItem.querySelector('.project-header').setAttribute('aria-expanded', 'false');
+        });
+
+        // Open clicked (if wasn't already open)
+        if (!isActive) {
+          item.classList.add('active');
+          body.style.maxHeight = body.scrollHeight + 'px';
+          header.setAttribute('aria-expanded', 'true');
+
+          // Trigger KPI counter animation
+          setTimeout(() => {
+            animateCounters(item);
+          }, 200);
+        }
+      });
+
+      // Keyboard accessibility
+      header.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          header.click();
+        }
+      });
+    });
+
+    // ——— KPI Counter Animation ———
+    function animateCounters(container) {
+      container.querySelectorAll('.kpi-number[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        const suffix = el.dataset.suffix || '';
+        const duration = 1200;
+        const start = performance.now();
+
+        function update(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.round(eased * target);
+          el.textContent = current + suffix;
+
+          if (progress < 1) {
+            requestAnimationFrame(update);
+          }
+        }
+
+        requestAnimationFrame(update);
+      });
+    }
+
+    // ——— Copy Email ———
+    const emailBtn = document.getElementById('emailCopy');
+    emailBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText('nkyra95@gmail.com').then(() => {
+        const emailText = emailBtn.querySelector('.email-text');
+        const copiedText = emailBtn.querySelector('.copied-text');
+        emailText.style.display = 'none';
+        copiedText.style.display = 'inline';
+        setTimeout(() => {
+          emailText.style.display = 'inline';
+          copiedText.style.display = 'none';
+        }, 2000);
+      });
+    });
+
+    emailBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        emailBtn.click();
+      }
+    });
+
+    // ——— Theme Toggle ———
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    // Apply saved preference on load
+    if (localStorage.getItem('theme') === 'light') {
+      htmlEl.setAttribute('data-theme', 'light');
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isLight = htmlEl.getAttribute('data-theme') === 'light';
+      if (isLight) {
+        htmlEl.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        htmlEl.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    // ——— Smooth scroll for nav links ———
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
