@@ -95,13 +95,13 @@
       font-family: 'DM Sans', sans-serif;
       font-size: clamp(15px, 1.2vw, 18px);
       line-height: 1.65;
-      letter-spacing: -0.0625em;
-      color: #444444;
+      letter-spacing: -0.01em;
+      color: #C8C8C8;
       font-weight: 400;
     }
 
     [data-theme="light"] .body-text {
-      color: #444444;
+      color: #2A2A2A;
     }
 
     .label {
@@ -233,7 +233,7 @@
     }
 
     .hero-name .heading-xl {
-      font-size: clamp(56px, 10vw, 140px);
+      font-size: clamp(48px, 10vw, 140px);
     }
 
     .hero-name span {
@@ -340,13 +340,18 @@
         max-width: 100%;
       }
 
+      .hero-top {
+        flex-direction: column;
+      }
+
       .hero-photo {
         position: relative;
         width: 100%;
-        max-width: 260px;
-        height: 340px;
+        max-width: 280px;
+        height: 380px;
         top: 0;
-        margin: 24px auto 0;
+        margin: 32px auto 0;
+        align-self: center;
       }
     }
 
@@ -399,8 +404,8 @@
     .about-photo {
       grid-column: 1 / -1;
       width: 100%;
-      aspect-ratio: 5 / 4;
-      max-height: 920px;
+      aspect-ratio: 16 / 9;
+      max-height: 560px;
       border-radius: 16px;
       overflow: hidden;
       margin-bottom: var(--spacing-lg);
@@ -463,8 +468,13 @@
       border: 1px solid var(--border);
       border-radius: 100px;
       font-size: 13px;
-      color: var(--text-secondary);
+      color: #BBBBBB;
       transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    [data-theme="light"] .skill-tag {
+      color: #333333;
+      border-color: #C8C8C8;
     }
 
     .skill-tag:hover {
@@ -567,7 +577,12 @@
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--text-secondary);
+      color: #BBBBBB;
+    }
+
+    [data-theme="light"] .project-tag {
+      color: #333333;
+      border-color: #C8C8C8;
     }
 
     .project-layout {
@@ -814,8 +829,17 @@
         grid-template-columns: 1fr;
       }
 
-      .nav-social {
+      .nav-social a {
         display: none;
+      }
+
+      .nav-social {
+        display: flex;
+        gap: 12px;
+      }
+
+      .nav-social .theme-toggle {
+        display: flex;
       }
 
       .project-header {
@@ -979,6 +1003,7 @@
         <li><a href="#about">About</a></li>
         <li><a href="#work">Work</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="https://alancruzcreai.github.io/kyra-cv/" target="_blank" rel="noopener">CV</a></li>
       </ul>
       <ul class="nav-social">
         <li>
@@ -1030,7 +1055,7 @@
         </div>
 
         <p class="hero-intro">
-          A project manager and delivery lead specializing in operational efficiency, team leadership and data-driven strategy — based in Mexico, open to remote.
+          Project manager and delivery lead specializing in operational efficiency, team leadership and data-driven strategy — based in Mexico, open to remote.
         </p>
       </div>
     </div>
@@ -1116,10 +1141,10 @@
           <div class="project-body">
             <div class="project-body-inner">
               <div class="project-meta">
-                <span class="project-tag">Client Services</span>
-                <span class="project-tag">Operations Lead</span>
+                <span class="project-tag">Client Services Management</span>
+                <span class="project-tag">Operations and QA Leadership</span>
                 <span class="project-tag">Data & Reporting</span>
-                <span class="project-tag">2021 — 2024</span>
+                <span class="project-tag">2021 — 2025</span>
               </div>
 
               <div class="project-layout">
@@ -1177,6 +1202,7 @@
                 <span class="project-tag">Non-Profit</span>
                 <span class="project-tag">Process Systematization</span>
                 <span class="project-tag">Operations Manual</span>
+                <span class="project-tag">Copy-editing</span>
               </div>
 
               <div class="project-layout">
