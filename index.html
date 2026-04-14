@@ -220,10 +220,20 @@
     .hero-top {
       position: relative;
       margin-bottom: clamp(40px, 5vw, 72px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: clamp(24px, 4vw, 64px);
     }
 
     .hero-name {
       margin-bottom: 0;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .hero-name .heading-xl {
+      font-size: clamp(56px, 10vw, 140px);
     }
 
     .hero-name span {
@@ -231,20 +241,36 @@
     }
 
     .hero-photo {
-      position: absolute;
-      top: clamp(0px, 2vw, 20px);
-      right: 0;
-      width: clamp(100px, 12vw, 180px);
-      height: clamp(100px, 12vw, 180px);
-      border-radius: 50%;
+      flex: 0 0 auto;
+      align-self: flex-start;
+      margin-top: clamp(8px, 1vw, 16px);
+      width: clamp(200px, 22vw, 300px);
+      height: clamp(280px, 30vw, 420px);
+      border-radius: 16px;
       overflow: hidden;
-      background: #222;
+      background: var(--border);
+      opacity: 0;
+      transform: translateY(24px) scale(0.98);
+      transition: opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1), transform 1.2s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.6s ease;
+      will-change: opacity, transform;
+    }
+
+    .hero-photo.in-view {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
 
     .hero-photo img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: center 30%;
+      transition: transform 1.4s cubic-bezier(0.23, 1, 0.32, 1), filter 0.8s ease;
+      will-change: transform;
+    }
+
+    .hero-photo:hover img {
+      transform: scale(1.04);
     }
 
     .hero-bottom {
@@ -315,9 +341,12 @@
       }
 
       .hero-photo {
-        width: 80px;
-        height: 80px;
+        position: relative;
+        width: 100%;
+        max-width: 260px;
+        height: 340px;
         top: 0;
+        margin: 24px auto 0;
       }
     }
 
@@ -365,6 +394,38 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: var(--spacing-lg);
+    }
+
+    .about-photo {
+      grid-column: 1 / -1;
+      width: 100%;
+      aspect-ratio: 21 / 9;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: var(--spacing-lg);
+      background: var(--border);
+      opacity: 0;
+      transform: translateY(32px) scale(0.98);
+      transition: opacity 1.1s cubic-bezier(0.23, 1, 0.32, 1), transform 1.1s cubic-bezier(0.23, 1, 0.32, 1);
+      will-change: opacity, transform;
+    }
+
+    .about-photo.in-view {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .about-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 28%;
+      transition: transform 1.4s cubic-bezier(0.23, 1, 0.32, 1), filter 0.8s ease;
+      will-change: transform;
+    }
+
+    .about-photo:hover img {
+      transform: scale(1.03);
     }
 
     .about-left .body-text {
@@ -950,8 +1011,8 @@
           <span class="heading-xl">KYRA</span>
           <span class="heading-xl">NUNEZ</span>
         </div>
-        <div class="hero-photo">
-          <img src="kyra.jpg" alt="Kyra Nunez">
+        <div class="hero-photo" id="heroPhoto">
+          <img src="kyra-hero.png" alt="Kyra Nunez">
         </div>
       </div>
 
@@ -982,6 +1043,9 @@
       </div>
 
       <div class="about-content">
+        <figure class="about-photo" id="aboutPhoto">
+          <img src="kyra-about.png" alt="Kyra Nunez portrait">
+        </figure>
         <div class="about-left">
           <p class="body-text reveal">
             Hello, my name is Kyra and I'm here to bring success to your project by integrating critical thinking with professional practice.
@@ -1254,6 +1318,34 @@
         revealObserver.observe(el);
       }
     });
+
+    // ——— Photo fade-in ———
+    // Hero photo reveals immediately on load
+    const heroPhoto = document.getElementById('heroPhoto');
+    if (heroPhoto) setTimeout(() => heroPhoto.classList.add('in-view'), 250);
+
+    // About photo piggy-backs on the existing reveal observer
+    const aboutPhoto = document.getElementById('aboutPhoto');
+    if (aboutPhoto) {
+      const photoReveal = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            photoReveal.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -80px 0px' });
+      photoReveal.observe(aboutPhoto);
+      // Fallback: if for any reason observer doesn't fire, reveal on scroll past it
+      const fallback = () => {
+        const r = aboutPhoto.getBoundingClientRect();
+        if (r.top < window.innerHeight - 80) {
+          aboutPhoto.classList.add('in-view');
+          window.removeEventListener('scroll', fallback);
+        }
+      };
+      window.addEventListener('scroll', fallback, { passive: true });
+    }
 
     // ——— Project Accordion ———
     document.querySelectorAll('.project-header').forEach(header => {
