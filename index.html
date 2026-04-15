@@ -691,7 +691,6 @@
     .kpi-card {
       background: var(--bg-elevated);
       padding: clamp(24px, 3vw, 40px);
-      padding-right: clamp(88px, 11vw, 128px);
       border-radius: 6px;
       position: relative;
       overflow: hidden;
@@ -727,33 +726,36 @@
       line-height: 1.4;
     }
 
-    /* ——— Animated gradient strip on LaserAway KPI cards ——— */
+    /* ——— Animated gradient medallion (50px circle, top-right of card) ——— */
     .kpi-gradient {
       position: absolute;
-      right: clamp(16px, 2vw, 24px);
-      top: clamp(20px, 2.5vw, 32px);
-      bottom: clamp(20px, 2.5vw, 32px);
-      width: clamp(48px, 6.5vw, 76px);
-      border-radius: 4px;
+      top: clamp(16px, 2vw, 20px);
+      right: clamp(16px, 2vw, 20px);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       pointer-events: none;
-      will-change: auto;
+      overflow: hidden;
     }
 
-    /* Static fallback (also default for reduced-motion users — no GIF is ever requested) */
+    /* Static fallback — warm champagne palette matching the animated GIFs.
+       Used by default; only swapped for the animated version if the user
+       doesn't prefer reduced motion (see media query below). */
     .kpi-gradient--productivity {
-      background-image: linear-gradient(to bottom, #00FF1A 0%, #FFEA00 75%, #FF0000 100%);
+      background-image: radial-gradient(circle at 50% 50%, #B8AE95 0%, #6E6454 100%);
     }
     .kpi-gradient--agents {
-      background-image: linear-gradient(to bottom, #6200FF 0%, #15A0F1 29%, #E1FF00 61%, #F700FF 100%);
+      background-image: conic-gradient(from 0deg, #B8AE95, #D4C5A8, #6E6454, #D4C5A8, #B8AE95);
     }
     .kpi-gradient--clinics {
-      background-image: radial-gradient(circle at 50% 50%, #00DDFF 0%, #04FF68 51%, #6170F5 100%);
+      background-image: radial-gradient(circle at 50% 50%, #D4C5A8 0%, #B8AE95 55%, #6E6454 100%);
     }
     .kpi-gradient--promotions {
-      background-image: linear-gradient(to bottom, #00FF33 0%, #F700FF 53%, #77DBFF 100%);
+      background-image: linear-gradient(to top, #6E6454 0%, #B8AE95 30%, #D4C5A8 55%, #F2EDD9 80%, #6E6454 100%);
     }
 
     /* Animated GIF only for users who accept motion */
@@ -765,14 +767,11 @@
     }
 
     @media (max-width: 600px) {
-      .kpi-card {
-        padding-right: 64px;
-      }
       .kpi-gradient {
-        width: 36px;
-        right: 12px;
-        top: 16px;
-        bottom: 16px;
+        width: 40px;
+        height: 40px;
+        top: 14px;
+        right: 14px;
       }
     }
 
