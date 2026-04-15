@@ -9,6 +9,7 @@
   <meta name="description" content="Kyra Nunez Gonzalez — Integrating critical thinking with professional practice. Project Manager, Delivery Lead, Operations Strategist.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://images.unsplash.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
   <style>
     /* ═══════════════════════════════════════════
@@ -32,6 +33,10 @@
       --spacing-md: clamp(24px, 3vw, 40px);
       --spacing-sm: 16px;
       --spacing-xs: 8px;
+      --text-body: #C8C8C8;
+      --text-tag: #BBBBBB;
+      --bg-elevated: #141414;
+      --bg-inset: #161616;
     }
 
     html {
@@ -98,18 +103,14 @@
       font-size: clamp(15px, 1.2vw, 18px);
       line-height: 1.65;
       letter-spacing: -0.01em;
-      color: #C8C8C8;
+      color: var(--text-body);
       font-weight: 400;
     }
 
-    [data-theme="light"] .body-text {
-      color: #2A2A2A;
-    }
-
     .label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-secondary);
     }
@@ -295,14 +296,15 @@
       font-size: clamp(14px, 1.1vw, 16px);
       font-weight: 400;
       color: var(--text);
-      transition: opacity 0.3s ease;
-      border: none;
-      padding: 0;
+      transition: border-color 0.3s ease, color 0.3s ease;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 20px;
       background: none;
     }
 
     .hero-email:hover {
-      opacity: 0.6;
+      border-color: var(--border-hover);
     }
 
     .hero-email .copy-icon {
@@ -323,12 +325,53 @@
 
     .hero-intro {
       max-width: 520px;
+      margin-left: auto;
       font-family: 'DM Sans', sans-serif;
       font-size: clamp(22px, 2.2vw, 32px);
       font-weight: 400;
       line-height: 1.35;
       color: var(--text);
-      text-align: right;
+      text-align: left;
+    }
+
+    .hero-tagline {
+      display: block;
+      margin-top: 16px;
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: clamp(24px, 3vw, 40px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      transition: opacity 0.5s ease;
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+
+    .scroll-indicator svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-secondary);
+    }
+
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
     }
 
     @media (max-width: 900px) {
@@ -340,6 +383,11 @@
       .hero-intro {
         text-align: left;
         max-width: 100%;
+        margin-left: 0;
+      }
+
+      .scroll-indicator {
+        display: none;
       }
 
       .hero-top {
@@ -470,13 +518,8 @@
       border: 1px solid var(--border);
       border-radius: 100px;
       font-size: 13px;
-      color: #BBBBBB;
+      color: var(--text-tag);
       transition: border-color 0.3s ease, color 0.3s ease;
-    }
-
-    [data-theme="light"] .skill-tag {
-      color: #333333;
-      border-color: #C8C8C8;
     }
 
     .skill-tag:hover {
@@ -502,12 +545,16 @@
       align-items: center;
       padding: clamp(24px, 3vw, 40px) 0;
       cursor: pointer;
-      transition: opacity 0.3s ease;
       gap: 24px;
     }
 
-    .project-header:hover {
-      opacity: 0.7;
+    .project-header:hover .project-title {
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }
+
+    .project-header:hover .project-toggle {
+      border-color: var(--border-hover);
     }
 
     .project-number {
@@ -525,11 +572,12 @@
       letter-spacing: -0.03em;
       line-height: 1.1;
       text-transform: uppercase;
+      transition: color 0.3s ease;
     }
 
     .project-toggle {
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border: 1px solid var(--border);
       border-radius: 50%;
       display: flex;
@@ -579,12 +627,7 @@
       font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #BBBBBB;
-    }
-
-    [data-theme="light"] .project-tag {
-      color: #333333;
-      border-color: #C8C8C8;
+      color: var(--text-tag);
     }
 
     .project-layout {
@@ -599,7 +642,7 @@
       overflow: hidden;
       border-radius: 8px;
       aspect-ratio: 4/3;
-      background: #161616;
+      background: var(--bg-inset);
     }
 
     .project-image-wrapper img {
@@ -647,7 +690,7 @@
     }
 
     .kpi-card {
-      background: #141414;
+      background: var(--bg-elevated);
       padding: clamp(24px, 3vw, 40px);
       border-radius: 6px;
       position: relative;
@@ -923,6 +966,10 @@
       --text-secondary: #666666;
       --border: #E0E0E0;
       --border-hover: #CCCCCC;
+      --text-body: #2A2A2A;
+      --text-tag: #333333;
+      --bg-elevated: #EBEBEB;
+      --bg-inset: #E8E8E8;
     }
 
     [data-theme="light"] ::selection {
@@ -938,16 +985,8 @@
       background: rgba(0, 0, 0, 0.03);
     }
 
-    [data-theme="light"] .kpi-card {
-      background: #EBEBEB;
-    }
-
     [data-theme="light"] .kpi-card::before {
       background: linear-gradient(90deg, transparent, rgba(0,0,0,0.06), transparent);
-    }
-
-    [data-theme="light"] .project-image-wrapper {
-      background: #E8E8E8;
     }
 
     body {
@@ -958,8 +997,8 @@
        THEME TOGGLE
        ═══════════════════════════════════════════ */
     .theme-toggle {
-      width: 32px;
-      height: 32px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -992,9 +1031,58 @@
 
     [data-theme="light"] .theme-toggle .icon-moon { display: block; }
     [data-theme="light"] .theme-toggle .icon-sun  { display: none; }
+
+    /* ═══════════════════════════════════════════
+       SKIP LINK
+       ═══════════════════════════════════════════ */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      z-index: 200;
+      padding: 8px 16px;
+      background: var(--text);
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 4px;
+      text-decoration: none;
+    }
+
+    .skip-link:focus {
+      top: 16px;
+    }
+
+    /* ═══════════════════════════════════════════
+       FOCUS INDICATORS
+       ═══════════════════════════════════════════ */
+    :focus-visible {
+      outline: 2px solid var(--text);
+      outline-offset: 2px;
+    }
+
+    .theme-toggle:focus-visible,
+    .project-toggle:focus-visible {
+      outline-offset: 0;
+    }
+
+    /* ═══════════════════════════════════════════
+       REDUCED MOTION
+       ═══════════════════════════════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .reveal { opacity: 1; transform: none; }
+      .hero-photo, .about-photo { opacity: 1; transform: none; }
+      html { scroll-behavior: auto; }
+    }
   </style>
 </head>
 <body>
+
+  <a href="#main-content" class="skip-link">Skip to content</a>
 
   <!-- Custom Cursor -->
   <div class="cursor-dot" id="cursor"></div>
@@ -1002,7 +1090,7 @@
   <!-- ═══════════ NAVIGATION ═══════════ -->
   <nav id="navbar">
     <div class="container">
-      <a href="#" class="nav-logo">Kyra</a>
+      <a href="#hero" class="nav-logo">Kyra</a>
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#work">Work</a></li>
@@ -1034,12 +1122,14 @@
   </nav>
 
   <!-- ═══════════ HERO ═══════════ -->
+  <main id="main-content">
   <section class="hero" id="hero">
     <div class="container">
       <div class="hero-top reveal">
         <div class="hero-name">
           <span class="heading-xl">KYRA</span>
           <span class="heading-xl">NUNEZ</span>
+          <span class="hero-tagline">Project Manager &mdash; Delivery Lead &mdash; Operations Strategist</span>
         </div>
         <div class="hero-photo" id="heroPhoto">
           <picture>
@@ -1064,6 +1154,13 @@
         <p class="hero-intro">
           Project manager and delivery lead specializing in operational efficiency, team leadership and data-driven strategy — based in Mexico, open to remote.
         </p>
+      </div>
+
+      <div class="scroll-indicator" aria-hidden="true">
+        <span>Scroll</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
       </div>
     </div>
   </section>
@@ -1159,13 +1256,17 @@
 
               <div class="project-layout">
                 <div class="project-image-wrapper">
-                  <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80" alt="Team collaboration and management" loading="lazy">
+                  <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&q=80" alt="Team collaboration and management" loading="lazy" width="800" height="600">
                   <div class="project-image-overlay">
                     <span class="project-image-label">Client Experience & Operations</span>
                   </div>
                 </div>
 
                 <div class="project-details">
+                  <p class="body-text project-description">
+                    Managed the Client Experience team across three languages, implementing strategies that tripled productivity. Created KPIs and SOPs, supervised 15-hour workday schedules, and delivered daily, weekly and monthly performance reports to site and client stakeholders.
+                  </p>
+
                   <div class="kpi-grid">
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3" data-suffix="x">0x</div>
@@ -1184,10 +1285,6 @@
                       <div class="kpi-label">Promotions<br>earned</div>
                     </div>
                   </div>
-
-                  <p class="body-text project-description">
-                    Managed the Client Experience team across three languages, implementing strategies that tripled productivity. Created KPIs and SOPs, supervised 15-hour workday schedules, and delivered daily, weekly and monthly performance reports to site and client stakeholders.
-                  </p>
                 </div>
               </div>
             </div>
@@ -1217,13 +1314,17 @@
 
               <div class="project-layout">
                 <div class="project-image-wrapper">
-                  <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80" alt="Professional woman working on documentation" loading="lazy">
+                  <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800&q=80" alt="Professional woman working on documentation" loading="lazy" width="800" height="600">
                   <div class="project-image-overlay">
                     <span class="project-image-label">Comprehensive Care Model</span>
                   </div>
                 </div>
 
                 <div class="project-details">
+                  <p class="body-text project-description">
+                    Systematized a Comprehensive Care Model for a civil association supporting women victims of domestic violence. Integrated legal, educational, psychological and social work areas into one unified Operations Manual delivered in a record 5 months.
+                  </p>
+
                   <div class="kpi-grid">
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="5" data-suffix=" mo">0 mo</div>
@@ -1242,10 +1343,6 @@
                       <div class="kpi-label">Holistic<br>implementation</div>
                     </div>
                   </div>
-
-                  <p class="body-text project-description">
-                    Systematized a Comprehensive Care Model for a civil association supporting women victims of domestic violence. Integrated legal, educational, psychological and social work areas into one unified Operations Manual delivered in a record 5 months.
-                  </p>
                 </div>
               </div>
             </div>
@@ -1279,15 +1376,15 @@
 
         <div class="contact-details reveal">
           <div class="contact-item">
-            <p class="label">Phone</p>
+            <span class="label">Phone</span>
             <a href="tel:+524445811784">+52 (444) 581 1784</a>
           </div>
           <div class="contact-item">
-            <p class="label">Email</p>
+            <span class="label">Email</span>
             <a href="mailto:nkyra95@gmail.com">nkyra95@gmail.com</a>
           </div>
           <div class="contact-item">
-            <p class="label">LinkedIn</p>
+            <span class="label">LinkedIn</span>
             <a href="https://www.linkedin.com/in/kyra-n%C3%BA%C3%B1ez-gonz%C3%A1lez-5ab822146" target="_blank" rel="noopener">Kyra Nunez Gonzalez</a>
           </div>
         </div>
@@ -1303,31 +1400,43 @@
       </div>
     </div>
   </section>
+  </main>
 
   <!-- ═══════════ JAVASCRIPT ═══════════ -->
   <script>
     // ——— Smooth custom cursor ———
     const cursor = document.getElementById('cursor');
     let cursorX = 0, cursorY = 0, currentX = 0, currentY = 0;
+    let cursorActive = false;
 
     document.addEventListener('mousemove', (e) => {
       cursorX = e.clientX;
       cursorY = e.clientY;
+      if (!cursorActive) {
+        cursorActive = true;
+        requestAnimationFrame(animateCursor);
+      }
     });
 
     function animateCursor() {
       currentX += (cursorX - currentX) * 0.15;
       currentY += (cursorY - currentY) * 0.15;
       cursor.style.transform = `translate(${currentX - 4}px, ${currentY - 4}px)`;
-      requestAnimationFrame(animateCursor);
+      if (Math.abs(cursorX - currentX) > 0.1 || Math.abs(cursorY - currentY) > 0.1) {
+        requestAnimationFrame(animateCursor);
+      } else {
+        cursorActive = false;
+      }
     }
-    animateCursor();
 
     // ——— Navbar scroll effect ———
     const navbar = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       navbar.classList.toggle('scrolled', window.scrollY > 60);
-    });
+      // Hide scroll indicator after user scrolls
+      const si = document.querySelector('.scroll-indicator');
+      if (si && window.scrollY > 100) si.style.opacity = '0';
+    }, { passive: true });
 
     // ——— Scroll reveal ———
     const revealElements = document.querySelectorAll('.reveal');
@@ -1453,9 +1562,11 @@
         const copiedText = emailBtn.querySelector('.copied-text');
         emailText.style.display = 'none';
         copiedText.style.display = 'inline';
+        emailBtn.setAttribute('aria-label', 'Email copied');
         setTimeout(() => {
           emailText.style.display = 'inline';
           copiedText.style.display = 'none';
+          emailBtn.setAttribute('aria-label', 'Copy email address');
         }, 2000);
       });
     });
@@ -1471,8 +1582,11 @@
     const themeToggle = document.getElementById('themeToggle');
     const htmlEl = document.documentElement;
 
-    // Apply saved preference on load
-    if (localStorage.getItem('theme') === 'light') {
+    // Apply saved preference on load, or detect OS preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      htmlEl.setAttribute('data-theme', 'light');
+    } else if (!savedTheme && window.matchMedia('(prefers-color-scheme: light)').matches) {
       htmlEl.setAttribute('data-theme', 'light');
     }
 
