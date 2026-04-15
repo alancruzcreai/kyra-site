@@ -726,48 +726,22 @@
       line-height: 1.4;
     }
 
-    /* ——— Animated gradient medallion (50px circle, top-right of card) ——— */
-    .kpi-gradient {
+    /* ——— Particle-sphere medallion (50px, top-right of card) ——— */
+    /* A Canvas point cloud rendered via rAF. No border, no container —
+       particles fade into the card background at the edges. Semantics
+       per card are handled in JS by the data-mode attribute. */
+    .kpi-orb {
       position: absolute;
       top: clamp(16px, 2vw, 20px);
       right: clamp(16px, 2vw, 20px);
       width: 50px;
       height: 50px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
       pointer-events: none;
-      overflow: hidden;
-    }
-
-    /* Static fallback — warm champagne palette matching the animated GIFs.
-       Used by default; only swapped for the animated version if the user
-       doesn't prefer reduced motion (see media query below). */
-    .kpi-gradient--productivity {
-      background-image: radial-gradient(circle at 50% 50%, #B8AE95 0%, #6E6454 100%);
-    }
-    .kpi-gradient--agents {
-      background-image: conic-gradient(from 0deg, #B8AE95, #D4C5A8, #6E6454, #D4C5A8, #B8AE95);
-    }
-    .kpi-gradient--clinics {
-      background-image: radial-gradient(circle at 50% 50%, #D4C5A8 0%, #B8AE95 55%, #6E6454 100%);
-    }
-    .kpi-gradient--promotions {
-      background-image: linear-gradient(to top, #6E6454 0%, #B8AE95 30%, #D4C5A8 55%, #F2EDD9 80%, #6E6454 100%);
-    }
-
-    /* Animated GIF only for users who accept motion */
-    @media (prefers-reduced-motion: no-preference) {
-      .kpi-gradient--productivity { background-image: url('grad-productivity.gif'); }
-      .kpi-gradient--agents       { background-image: url('grad-agents.gif'); }
-      .kpi-gradient--clinics      { background-image: url('grad-clinics.gif'); }
-      .kpi-gradient--promotions   { background-image: url('grad-promotions.gif'); }
+      opacity: 0.95;
     }
 
     @media (max-width: 600px) {
-      .kpi-gradient {
+      .kpi-orb {
         width: 40px;
         height: 40px;
         top: 14px;
@@ -1323,22 +1297,22 @@
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3" data-suffix="x">0x</div>
                       <div class="kpi-label">Productivity<br>increase</div>
-                      <div class="kpi-gradient kpi-gradient--productivity" aria-hidden="true"></div>
+                      <canvas class="kpi-orb" data-mode="productivity" width="100" height="100" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="40" data-suffix="+">0+</div>
                       <div class="kpi-label">Agents<br>managed</div>
-                      <div class="kpi-gradient kpi-gradient--agents" aria-hidden="true"></div>
+                      <canvas class="kpi-orb" data-mode="agents" width="100" height="100" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="150" data-suffix="+">0+</div>
                       <div class="kpi-label">Clinics<br>supported</div>
-                      <div class="kpi-gradient kpi-gradient--clinics" aria-hidden="true"></div>
+                      <canvas class="kpi-orb" data-mode="clinics" width="100" height="100" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3">0</div>
                       <div class="kpi-label">Promotions<br>earned</div>
-                      <div class="kpi-gradient kpi-gradient--promotions" aria-hidden="true"></div>
+                      <canvas class="kpi-orb" data-mode="promotions" width="100" height="100" aria-hidden="true"></canvas>
                     </div>
                   </div>
                 </div>
@@ -1658,7 +1632,191 @@
         htmlEl.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
       }
+      // Notify orbs so they re-read --text color immediately
+      document.dispatchEvent(new Event('themechange'));
     });
+
+    // ——— KPI particle-sphere medallions ———
+    // A single shared rAF drives all visible orbs. Invisible orbs (collapsed
+    // project or off-screen) consume no CPU. Reduced-motion users see one
+    // static frame. Particle color inherits from --text so the same sphere
+    // reads as white-on-dark in dark mode and dark-on-bone in light mode.
+    (() => {
+      const orbs = Array.from(document.querySelectorAll('canvas.kpi-orb'));
+      if (!orbs.length) return;
+
+      const DPR = Math.min(window.devicePixelRatio || 1, 2);
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Build one shared sphere point cloud. All orbs share the same
+      // coordinates; only the per-frame modulation differs by mode.
+      const N = 340;
+      const PTS = new Float32Array(N * 4); // x, y, z, seed
+      for (let i = 0; i < N; i++) {
+        const u = Math.random();
+        const v = Math.random();
+        const theta = 2 * Math.PI * u;
+        const phi = Math.acos(2 * v - 1);
+        PTS[i*4]   = Math.sin(phi) * Math.cos(theta);
+        PTS[i*4+1] = Math.sin(phi) * Math.sin(theta);
+        PTS[i*4+2] = Math.cos(phi);
+        PTS[i*4+3] = Math.random();
+      }
+
+      // Cache the --text color as rgb; re-read on theme change
+      let rgb = [245, 245, 240];
+      function refreshColor() {
+        const hex = getComputedStyle(document.body).getPropertyValue('--text').trim();
+        const h = hex.replace('#','');
+        if (h.length === 6) {
+          rgb = [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+        }
+      }
+      refreshColor();
+      document.addEventListener('themechange', () => {
+        refreshColor();
+        // repaint paused orbs once
+        active.forEach(o => { if (!o.running) drawOrb(o, performance.now() - o.t0); });
+      });
+
+      // Prepare each canvas for high-DPI rendering
+      const active = orbs.map(canvas => {
+        const logical = canvas.width; // 100
+        canvas.width = logical * DPR;
+        canvas.height = logical * DPR;
+        const ctx = canvas.getContext('2d');
+        ctx.scale(DPR, DPR);
+        return {
+          canvas, ctx,
+          mode: canvas.dataset.mode,
+          size: logical,
+          visible: false,
+          running: false,
+          t0: performance.now(),
+        };
+      });
+
+      function drawOrb(o, t) {
+        const { ctx, size, mode } = o;
+        const cx = size / 2, cy = size / 2;
+        const R  = size * 0.42;
+        ctx.clearRect(0, 0, size, size);
+
+        // Mode parameters
+        let rotY = 0, tilt = 0, pulse = 0, ring = -1, wave = -999;
+        if (mode === 'agents') {
+          rotY = t * 0.0005;
+          tilt = 0.35;
+        } else if (mode === 'productivity') {
+          // 3 quick pulses then rest. Loop = 4s.
+          const L = 4000, ph = (t % L) / L;
+          if (ph < 0.55) {
+            const local = (ph / 0.55) * 3;
+            pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.22;
+          }
+        } else if (mode === 'clinics') {
+          // Sonar ring radius 0 → 1
+          const L = 3600;
+          ring = (t % L) / L;
+        } else if (mode === 'promotions') {
+          // Upward brightness wave
+          const L = 4500;
+          wave = (t % L) / L * 2.4 - 1.2; // -1.2 → +1.2
+        }
+
+        const scale = 1 + pulse;
+        const cT = Math.cos(tilt), sT = Math.sin(tilt);
+        const cY = Math.cos(rotY), sY = Math.sin(rotY);
+
+        for (let i = 0; i < N; i++) {
+          let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+
+          // Y-axis rotation (for agents)
+          if (rotY !== 0) {
+            const nx =  cY * x + sY * z;
+            const nz = -sY * x + cY * z;
+            x = nx; z = nz;
+          }
+          // X-axis tilt
+          if (tilt !== 0) {
+            const ny =  cT * y - sT * z;
+            const nz =  sT * y + cT * z;
+            y = ny; z = nz;
+          }
+
+          // Project
+          const px = cx + x * R * scale;
+          const py = cy + y * R * scale;
+
+          // Depth alpha: back half dimmer
+          let a = 0.22 + 0.52 * (z + 1) * 0.5;
+
+          // Soft radial fade so particles dissolve into the card bg
+          const dx = (px - cx) / R;
+          const dy = (py - cy) / R;
+          const dr = Math.sqrt(dx*dx + dy*dy);
+          a *= Math.max(0, Math.min(1, 1.18 - dr));
+          a = Math.pow(a, 1.35);
+
+          // Sonar boost for clinics
+          if (ring >= 0) {
+            const band = Math.abs(dr - ring);
+            const boost = Math.max(0, 1 - band / 0.28) * (1 - ring) * 0.85;
+            a = Math.min(1, a + boost);
+          }
+          // Upward wave boost for promotions
+          if (wave > -2) {
+            // canvas y grows downward, flip so top of sphere = +1
+            const ny = -y;
+            const yd = Math.abs(ny - wave);
+            const boost = Math.max(0, 1 - yd / 0.32) * 0.75;
+            a = Math.min(1, a + boost);
+          }
+
+          if (a < 0.03) continue;
+          ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;
+          ctx.fillRect(px, py, 1.1, 1.1);
+        }
+      }
+
+      // Shared rAF loop — runs only while at least one orb is visible
+      let rafId = null;
+      function tick(now) {
+        let anyRunning = false;
+        for (const o of active) {
+          if (o.running) {
+            drawOrb(o, now - o.t0);
+            anyRunning = true;
+          }
+        }
+        if (anyRunning) rafId = requestAnimationFrame(tick);
+        else rafId = null;
+      }
+      function ensureLoop() {
+        if (rafId == null) rafId = requestAnimationFrame(tick);
+      }
+
+      // Draw a single static frame for every orb so reduced-motion users
+      // and any just-mounted-but-offscreen orbs still show something.
+      active.forEach(o => drawOrb(o, 0));
+
+      if (reduce) return; // no animation for motion-sensitive users
+
+      // Start/stop orbs based on visibility
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          const o = active.find(x => x.canvas === e.target);
+          if (!o) continue;
+          if (e.isIntersecting) {
+            if (!o.running) { o.t0 = performance.now(); o.running = true; }
+            ensureLoop();
+          } else {
+            o.running = false;
+          }
+        }
+      }, { threshold: 0.15 });
+      active.forEach(o => io.observe(o.canvas));
+    })();
 
     // ——— Smooth scroll for nav links ———
     document.querySelectorAll('a[href^="#"]').forEach(link => {
