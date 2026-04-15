@@ -691,6 +691,7 @@
     .kpi-card {
       background: var(--bg-elevated);
       padding: clamp(24px, 3vw, 40px);
+      padding-right: clamp(88px, 11vw, 128px);
       border-radius: 6px;
       position: relative;
       overflow: hidden;
@@ -704,6 +705,7 @@
       right: 0;
       height: 1px;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+      z-index: 2;
     }
 
     .kpi-number {
@@ -723,6 +725,55 @@
       text-transform: uppercase;
       color: var(--text-secondary);
       line-height: 1.4;
+    }
+
+    /* ——— Animated gradient strip on LaserAway KPI cards ——— */
+    .kpi-gradient {
+      position: absolute;
+      right: clamp(16px, 2vw, 24px);
+      top: clamp(20px, 2.5vw, 32px);
+      bottom: clamp(20px, 2.5vw, 32px);
+      width: clamp(48px, 6.5vw, 76px);
+      border-radius: 4px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      will-change: auto;
+    }
+
+    /* Static fallback (also default for reduced-motion users — no GIF is ever requested) */
+    .kpi-gradient--productivity {
+      background-image: linear-gradient(to bottom, #00FF1A 0%, #FFEA00 75%, #FF0000 100%);
+    }
+    .kpi-gradient--agents {
+      background-image: linear-gradient(to bottom, #6200FF 0%, #15A0F1 29%, #E1FF00 61%, #F700FF 100%);
+    }
+    .kpi-gradient--clinics {
+      background-image: radial-gradient(circle at 50% 50%, #00DDFF 0%, #04FF68 51%, #6170F5 100%);
+    }
+    .kpi-gradient--promotions {
+      background-image: linear-gradient(to bottom, #00FF33 0%, #F700FF 53%, #77DBFF 100%);
+    }
+
+    /* Animated GIF only for users who accept motion */
+    @media (prefers-reduced-motion: no-preference) {
+      .kpi-gradient--productivity { background-image: url('grad-productivity.gif'); }
+      .kpi-gradient--agents       { background-image: url('grad-agents.gif'); }
+      .kpi-gradient--clinics      { background-image: url('grad-clinics.gif'); }
+      .kpi-gradient--promotions   { background-image: url('grad-promotions.gif'); }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-card {
+        padding-right: 64px;
+      }
+      .kpi-gradient {
+        width: 36px;
+        right: 12px;
+        top: 16px;
+        bottom: 16px;
+      }
     }
 
     /* ═══════════════════════════════════════════
@@ -1273,18 +1324,22 @@
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3" data-suffix="x">0x</div>
                       <div class="kpi-label">Productivity<br>increase</div>
+                      <div class="kpi-gradient kpi-gradient--productivity" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="40" data-suffix="+">0+</div>
                       <div class="kpi-label">Agents<br>managed</div>
+                      <div class="kpi-gradient kpi-gradient--agents" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="150" data-suffix="+">0+</div>
                       <div class="kpi-label">Clinics<br>supported</div>
+                      <div class="kpi-gradient kpi-gradient--clinics" aria-hidden="true"></div>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3">0</div>
                       <div class="kpi-label">Promotions<br>earned</div>
+                      <div class="kpi-gradient kpi-gradient--promotions" aria-hidden="true"></div>
                     </div>
                   </div>
                 </div>
