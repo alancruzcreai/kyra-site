@@ -732,19 +732,19 @@
        per card are handled in JS by the data-mode attribute. */
     .kpi-orb {
       position: absolute;
-      top: clamp(10px, 1.5vw, 16px);
-      right: clamp(10px, 1.5vw, 16px);
-      width: 80px;
-      height: 80px;
+      top: 50%;
+      right: clamp(16px, 3vw, 32px);
+      transform: translateY(-50%);
+      width: clamp(100px, 14vw, 140px);
+      height: clamp(100px, 14vw, 140px);
       pointer-events: none;
     }
 
     @media (max-width: 600px) {
       .kpi-orb {
-        width: 56px;
-        height: 56px;
-        top: 10px;
-        right: 10px;
+        width: 80px;
+        height: 80px;
+        right: 12px;
       }
     }
 
@@ -1296,22 +1296,22 @@
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3" data-suffix="x">0x</div>
                       <div class="kpi-label">Productivity<br>increase</div>
-                      <canvas class="kpi-orb" data-mode="productivity" width="160" height="160" aria-hidden="true"></canvas>
+                      <canvas class="kpi-orb" data-mode="productivity" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="40" data-suffix="+">0+</div>
                       <div class="kpi-label">Agents<br>managed</div>
-                      <canvas class="kpi-orb" data-mode="agents" width="160" height="160" aria-hidden="true"></canvas>
+                      <canvas class="kpi-orb" data-mode="agents" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="150" data-suffix="+">0+</div>
                       <div class="kpi-label">Clinics<br>supported</div>
-                      <canvas class="kpi-orb" data-mode="clinics" width="160" height="160" aria-hidden="true"></canvas>
+                      <canvas class="kpi-orb" data-mode="clinics" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="3">0</div>
                       <div class="kpi-label">Promotions<br>earned</div>
-                      <canvas class="kpi-orb" data-mode="promotions" width="160" height="160" aria-hidden="true"></canvas>
+                      <canvas class="kpi-orb" data-mode="promotions" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                   </div>
                 </div>
@@ -1649,9 +1649,8 @@
 
       // Build one shared sphere point cloud. All orbs share the same
       // coordinates; only the per-frame modulation differs by mode.
-      // Denser cluster with bigger dots so the sphere reads as a solid
-      // point-cloud object, not scattered smudges.
-      const N = 300;
+      // High particle count + large dots = unmistakable point-cloud sphere.
+      const N = 600;
       const PTS = new Float32Array(N * 4); // x, y, z, seed
       for (let i = 0; i < N; i++) {
         const u = Math.random();
@@ -1700,7 +1699,7 @@
       function drawOrb(o, t) {
         const { ctx, size, mode } = o;
         const cx = size / 2, cy = size / 2;
-        const R  = size * 0.34; // tighter cluster — particles stay close
+        const R  = size * 0.38;
         ctx.clearRect(0, 0, size, size);
 
         // Mode parameters
@@ -1749,16 +1748,14 @@
           const px = cx + x * R * scale;
           const py = cy + y * R * scale;
 
-          // Depth alpha: front hemisphere bright, back dim
-          let a = 0.2 + 0.8 * (z + 1) * 0.5;
+          // Strong depth: front hemisphere fully opaque, back still visible
+          let a = 0.35 + 0.65 * (z + 1) * 0.5;
 
-          // Soft radial fade — particles dissolve at sphere edges
+          // Soft radial fade — particles dissolve only at the very edge
           const dx = (px - cx) / R;
           const dy = (py - cy) / R;
           const dr = Math.sqrt(dx*dx + dy*dy);
-          a *= Math.max(0, Math.min(1, 1.05 - dr * 0.7));
-          // Minimal pow to keep granular texture
-          a = Math.pow(a, 0.9);
+          a *= Math.max(0, Math.min(1, 1.15 - dr * 0.55));
 
           // Sonar boost for clinics
           if (ring >= 0) {
@@ -1777,8 +1774,10 @@
 
           if (a < 0.03) continue;
           ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;
-          // 2px dots — chunky enough to read as particles at 80px display
-          ctx.fillRect(px - 0.5, py - 0.5, 2, 2);
+          // 3px dots — unmissable grain
+          ctx.beginPath();
+          ctx.arc(px, py, 1.5, 0, 6.283);
+          ctx.fill();
         }
       }
 
