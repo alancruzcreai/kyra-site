@@ -733,18 +733,18 @@
     .kpi-orb {
       position: absolute;
       top: 50%;
-      right: clamp(16px, 3vw, 32px);
+      right: clamp(12px, 2.5vw, 28px);
       transform: translateY(-50%);
-      width: clamp(100px, 14vw, 140px);
-      height: clamp(100px, 14vw, 140px);
+      width: clamp(88px, 12vw, 120px);
+      height: clamp(88px, 12vw, 120px);
       pointer-events: none;
     }
 
     @media (max-width: 600px) {
       .kpi-orb {
-        width: 80px;
-        height: 80px;
-        right: 12px;
+        width: 72px;
+        height: 72px;
+        right: 10px;
       }
     }
 
@@ -1649,8 +1649,8 @@
 
       // Build one shared sphere point cloud. All orbs share the same
       // coordinates; only the per-frame modulation differs by mode.
-      // High particle count + large dots = unmistakable point-cloud sphere.
-      const N = 600;
+      // Dense point cloud for rich texture at ~120px display.
+      const N = 800;
       const PTS = new Float32Array(N * 4); // x, y, z, seed
       for (let i = 0; i < N; i++) {
         const u = Math.random();
@@ -1699,84 +1699,111 @@
       function drawOrb(o, t) {
         const { ctx, size, mode } = o;
         const cx = size / 2, cy = size / 2;
-        const R  = size * 0.38;
+        const R = size * 0.38;
         ctx.clearRect(0, 0, size, size);
 
-        // Mode parameters
-        let rotY = 0, tilt = 0, pulse = 0, ring = -1, wave = -999;
-        if (mode === 'agents') {
-          rotY = t * 0.0009; // a touch faster so rotation reads at 50px
-          tilt = 0.35;
-        } else if (mode === 'productivity') {
-          // 3 quick pulses then rest. Loop = 3.4s.
-          const L = 3400, ph = (t % L) / L;
+        // ── Every mode gets a slow base Y rotation so the sphere
+        //    always feels alive and three-dimensional. ──
+        const baseRotY = t * 0.00015;
+
+        // ── Per-mode motion parameters (POSITIONAL, not just brightness) ──
+        let extraRotY = 0, tiltX = 0, pulse = 0;
+        // clinics ring position (0-1) and promotions drift phase
+        let ringPos = -1, driftSpeed = 0;
+
+        if (mode === 'productivity') {
+          // 3× quick scale pulses (the sphere breathes outward 3 times)
+          const L = 3200, ph = (t % L) / L;
           if (ph < 0.55) {
             const local = (ph / 0.55) * 3;
-            pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.32;
+            pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.38;
           }
+        } else if (mode === 'agents') {
+          // Faster rotation + tilt = clearly spinning 3D globe
+          extraRotY = t * 0.0012;
+          tiltX = 0.4;
         } else if (mode === 'clinics') {
-          // Sonar ring radius 0 → 1
-          const L = 3000;
-          ring = (t % L) / L;
+          // Sonar: ring that PUSHES particles outward as it expands
+          const L = 3200;
+          ringPos = (t % L) / L;
         } else if (mode === 'promotions') {
-          // Upward brightness wave
-          const L = 3800;
-          wave = (t % L) / L * 2.4 - 1.2; // -1.2 → +1.2
+          // Continuous upward drift — particles physically rise and wrap
+          driftSpeed = t * 0.00025;
         }
 
+        const totalRotY = baseRotY + extraRotY;
         const scale = 1 + pulse;
-        const cT = Math.cos(tilt), sT = Math.sin(tilt);
-        const cY = Math.cos(rotY), sY = Math.sin(rotY);
+        const cY = Math.cos(totalRotY), sY = Math.sin(totalRotY);
+        const cT = Math.cos(tiltX),     sT = Math.sin(tiltX);
 
         for (let i = 0; i < N; i++) {
           let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+          const seed = PTS[i*4+3];
 
-          // Y-axis rotation (for agents)
-          if (rotY !== 0) {
+          // ── Promotions: each particle drifts upward on its own phase ──
+          if (driftSpeed > 0) {
+            // phase cycles 0→1 per particle, staggered by seed
+            const ph = (driftSpeed + seed) % 1;
+            // remap to vertical offset: bottom → top of sphere
+            y = -1 + ph * 2; // -1 to +1
+            // constrain x,z to the circle at this y-slice of the sphere
+            const sliceR = Math.sqrt(Math.max(0, 1 - y * y));
+            const angle = seed * Math.PI * 2 + driftSpeed * 0.5;
+            x = Math.cos(angle) * sliceR;
+            z = Math.sin(angle) * sliceR;
+          }
+
+          // ── Y-axis rotation (shared base + per-mode extra) ──
+          {
             const nx =  cY * x + sY * z;
             const nz = -sY * x + cY * z;
             x = nx; z = nz;
           }
-          // X-axis tilt
-          if (tilt !== 0) {
+          // ── X-axis tilt (agents) ──
+          if (tiltX !== 0) {
             const ny =  cT * y - sT * z;
             const nz =  sT * y + cT * z;
             y = ny; z = nz;
           }
 
-          // Project
-          const px = cx + x * R * scale;
-          const py = cy + y * R * scale;
+          // ── Project to 2D ──
+          let px = cx + x * R * scale;
+          let py = cy + y * R * scale;
 
-          // Strong depth: front hemisphere fully opaque, back still visible
-          let a = 0.35 + 0.65 * (z + 1) * 0.5;
+          // ── Clinics sonar: displace particles outward as ring sweeps ──
+          if (ringPos >= 0) {
+            const dr2d = Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy)) / R;
+            const dist = Math.abs(dr2d - ringPos);
+            if (dist < 0.3) {
+              const push = (1 - dist / 0.3) * 0.18 * (1 - ringPos * 0.5);
+              px += (px - cx) / R * push * R;
+              py += (py - cy) / R * push * R;
+            }
+          }
 
-          // Soft radial fade — particles dissolve only at the very edge
-          const dx = (px - cx) / R;
-          const dy = (py - cy) / R;
-          const dr = Math.sqrt(dx*dx + dy*dy);
-          a *= Math.max(0, Math.min(1, 1.15 - dr * 0.55));
+          // ── Alpha: depth + radial fade ──
+          let a = 0.3 + 0.7 * (z + 1) * 0.5;
+          const fdx = (px - cx) / R, fdy = (py - cy) / R;
+          const fdr = Math.sqrt(fdx*fdx + fdy*fdy);
+          a *= Math.max(0, Math.min(1, 1.15 - fdr * 0.5));
 
-          // Sonar boost for clinics
-          if (ring >= 0) {
-            const band = Math.abs(dr - ring);
-            const boost = Math.max(0, 1 - band / 0.28) * (1 - ring) * 0.85;
+          // Sonar brightness boost on the ring itself
+          if (ringPos >= 0) {
+            const band = Math.abs(fdr - ringPos);
+            const boost = Math.max(0, 1 - band / 0.22) * (1 - ringPos) * 0.9;
             a = Math.min(1, a + boost);
           }
-          // Upward wave boost for promotions
-          if (wave > -2) {
-            // canvas y grows downward, flip so top of sphere = +1
-            const ny = -y;
-            const yd = Math.abs(ny - wave);
-            const boost = Math.max(0, 1 - yd / 0.32) * 0.75;
-            a = Math.min(1, a + boost);
+          // Promotions: fade particles near the poles so the wrap is soft
+          if (driftSpeed > 0) {
+            const ph = (driftSpeed + seed) % 1;
+            const edge = Math.min(ph, 1 - ph) * 4; // 0 at poles, 1 in middle
+            a *= Math.min(1, edge);
           }
 
           if (a < 0.03) continue;
           ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;
-          // 3px dots — unmissable grain
           ctx.beginPath();
-          ctx.arc(px, py, 1.5, 0, 6.283);
+          ctx.arc(px, py, 1.3, 0, 6.283);
           ctx.fill();
         }
       }
