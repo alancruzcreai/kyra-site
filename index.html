@@ -732,9 +732,8 @@
        per card are handled in JS by the data-mode attribute. */
     .kpi-orb {
       position: absolute;
-      top: 50%;
-      right: clamp(12px, 2.5vw, 28px);
-      transform: translateY(-50%);
+      top: clamp(10px, 1.5vw, 16px);
+      right: clamp(10px, 1.5vw, 16px);
       width: clamp(88px, 12vw, 120px);
       height: clamp(88px, 12vw, 120px);
       pointer-events: none;
@@ -744,6 +743,7 @@
       .kpi-orb {
         width: 72px;
         height: 72px;
+        top: 10px;
         right: 10px;
       }
     }
@@ -1872,23 +1872,23 @@
 
         // ═══════════════════════════════════════════════════════
         // OTRA OPORTUNIDAD — Card 01 — DELIVERY (5 mo):
-        // Five small spheres interlocked, each rotating on its
-        // own axis. Represents "5 months of coordinated effort."
+        // Five clearly distinct mini-spheres orbiting at 72°
+        // intervals, each self-rotating. Wider orbit so all 5
+        // read as separate entities.
         // ═══════════════════════════════════════════════════════
         if (mode === 'delivery') {
           const orbitAngle = t * 0.0006;
-          const orbitR = R * 0.35;
-          const subR = R * 0.34;
+          const orbitR = R * 0.52;  // wider orbit → 5 spheres clearly distinct
+          const subR   = R * 0.24;  // smaller sub-sphere → no overlapping
           const perGroup = Math.floor(N / 5);
 
           for (let g = 0; g < 5; g++) {
-            const ga = orbitAngle + g * TAU / 5;
+            const ga  = orbitAngle + g * TAU / 5;
             const gcx = cx + Math.cos(ga) * orbitR;
-            const gcy = cy + Math.sin(ga) * orbitR * 0.65;
+            const gcy = cy + Math.sin(ga) * orbitR * 0.7;
             const selfRot = t * 0.0007 + g * 1.25;
             const cS = Math.cos(selfRot), sS = Math.sin(selfRot);
-            const tiltAngle = 0.3 + g * 0.15;
-            const cT = Math.cos(tiltAngle), sT = Math.sin(tiltAngle);
+            const cT = Math.cos(0.3), sT = Math.sin(0.3);
 
             const start = g * perGroup;
             const end = Math.min(start + perGroup, N);
@@ -1898,7 +1898,7 @@
               [y, z] = rotXZ(y, z, cT, sT);
               const px = gcx + x * subR;
               const py = gcy + y * subR;
-              let a = 0.25 + 0.6 * (z + 1) * 0.5;
+              let a = 0.28 + 0.62 * (z + 1) * 0.5;
               const dr = Math.sqrt((px-gcx)*(px-gcx)+(py-gcy)*(py-gcy)) / subR;
               a *= Math.max(0, 1.1 - dr * 0.5);
               dot(ctx, px, py, a);
@@ -1946,71 +1946,104 @@
 
         // ═══════════════════════════════════════════════════════
         // OTRA OPORTUNIDAD — Card 03 — MANUAL (1):
-        // One single bold ring outline made of dense particles,
-        // rotating. Represents "one unified manual."
+        // Atom: dense nucleus cluster + 3 orbital rings at 60°
+        // tilt intervals (like electron orbitals). Represents
+        // "one unified system with all parts in orbit."
         // ═══════════════════════════════════════════════════════
         if (mode === 'manual') {
           const angle = t * 0.0006;
-          const ringR = R * 0.7;
-          const cA = Math.cos(angle), sA = Math.sin(angle);
-          // Slight 3D tilt so the ring reads as a tilted halo
-          const tilt = 0.35;
-          const cT = Math.cos(tilt), sT = Math.sin(tilt);
+          const nucleusN = Math.floor(N * 0.12);  // ~96 particles = nucleus
+          const ringN    = Math.floor((N - nucleusN) / 3); // ~235 each orbital
 
-          for (let i = 0; i < N; i++) {
-            const seed = PTS[i*4+3];
-            // Place particle on ring circumference in 3D
-            const pAngle = seed * TAU;
-            // Tight radial jitter for a bold stroke
-            const jitter = PTS[i*4] * 0.06 * R;
-            const pr = ringR + jitter;
-            // 3D ring: x,z on circle, y=0 (flat ring)
-            let rx = Math.cos(pAngle) * pr;
-            let ry = 0 + PTS[i*4+1] * 0.04 * R; // tiny vertical noise
-            let rz = Math.sin(pAngle) * pr;
-            // Rotate ring around Y
-            [rx, rz] = rotYZ(rx, rz, cA, sA);
-            // Tilt ring around X
-            [ry, rz] = rotXZ(ry, rz, cT, sT);
-            const px = cx + rx;
-            const py = cy + ry;
-            // Depth alpha
-            let a = 0.35 + 0.65 * (rz / (ringR + R*0.06) + 1) * 0.5;
+          // Nucleus — tight cluster at center
+          for (let i = 0; i < nucleusN; i++) {
+            const px = cx + PTS[i*4]   * R * 0.10;
+            const py = cy + PTS[i*4+1] * R * 0.10;
+            const a  = 0.45 + 0.55 * (PTS[i*4+2] + 1) * 0.5;
             dot(ctx, px, py, a);
+          }
+
+          // 3 orbital rings, each tilted 60° from previous
+          const tilts = [0, Math.PI / 3, -Math.PI / 3];
+          const rotZs = [0, 0, Math.PI / 4];
+          for (let ri = 0; ri < 3; ri++) {
+            const orbAngle = angle * (ri % 2 === 0 ? 1 : -1) + ri * TAU / 3;
+            const cA = Math.cos(orbAngle), sA = Math.sin(orbAngle);
+            const cTilt = Math.cos(tilts[ri]), sTilt = Math.sin(tilts[ri]);
+            const cZ = Math.cos(rotZs[ri]), sZ = Math.sin(rotZs[ri]);
+            const orbR = R * 0.74;
+
+            const start = nucleusN + ri * ringN;
+            const end = Math.min(start + ringN, N);
+            for (let i = start; i < end; i++) {
+              const seed = PTS[i*4+3];
+              const pA = orbAngle + seed * TAU;
+              const jitter = PTS[i*4] * 0.05 * R;
+              const pr = orbR + jitter;
+              // Ring in XZ plane initially
+              let rx = Math.cos(pA) * pr;
+              let ry = PTS[i*4+1] * 0.04 * R;
+              let rz = Math.sin(pA) * pr;
+              // Tilt around X
+              [ry, rz] = rotXZ(ry, rz, cTilt, sTilt);
+              // Rotate around Z for 3rd orbital variety
+              if (rotZs[ri] !== 0) {
+                const nx = cZ * rx - sZ * ry;
+                const ny = sZ * rx + cZ * ry;
+                rx = nx; ry = ny;
+              }
+              const px = cx + rx;
+              const py = cy + ry;
+              const depth = rz / (orbR * 1.1);
+              let a = 0.25 + 0.7 * (depth + 1) * 0.5;
+              dot(ctx, px, py, a);
+            }
           }
           return;
         }
 
         // ═══════════════════════════════════════════════════════
         // OTRA OPORTUNIDAD — Card 04 — HOLISTIC (100%):
-        // Two equal-sized spheres rotating independently side
-        // by side. Together = 100% holistic coverage.
+        // Three concentric rings stacked vertically: small (top),
+        // medium (center), large (bottom). Each ring rotates in
+        // its own plane at a different speed/direction.
         // ═══════════════════════════════════════════════════════
         if (mode === 'holistic') {
-          const halfN = Math.floor(N / 2);
-          const subR = R * 0.52;
-          const gap = R * 0.38;
-          const spheres = [
-            { cx: cx - gap, rot: t * 0.0006, tilt: 0.3 },
-            { cx: cx + gap, rot: -t * 0.0006, tilt: -0.25 },
+          const base = t * 0.0006;
+          // Three rings: each in a tilted vertical plane, stacked on Y
+          const rings = [
+            { r: R * 0.24, yOff: -R * 0.50, speed: 1.2,  dir:  1, tilt: 0.22 },
+            { r: R * 0.46, yOff:  0,          speed: 0.85, dir: -1, tilt: 0.18 },
+            { r: R * 0.76, yOff:  R * 0.46,  speed: 0.55, dir:  1, tilt: 0.14 },
           ];
+          const perRing = Math.floor(N / 3);
 
-          for (let s = 0; s < 2; s++) {
-            const sp = spheres[s];
-            const cRY = Math.cos(sp.rot), sRY = Math.sin(sp.rot);
-            const cRT = Math.cos(sp.tilt), sRT = Math.sin(sp.tilt);
-            const start = s * halfN;
-            const end = start + halfN;
+          for (let ri = 0; ri < 3; ri++) {
+            const ring = rings[ri];
+            const angle = base * ring.speed * ring.dir;
+            const cA = Math.cos(angle), sA = Math.sin(angle);
+            // Tilt so the ring shows curvature (not a flat line)
+            const cT = Math.cos(ring.tilt), sT = Math.sin(ring.tilt);
+            const start = ri * perRing;
+            const end = Math.min(start + perRing, N);
 
             for (let i = start; i < end; i++) {
-              let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
-              [x, z] = rotYZ(x, z, cRY, sRY);
-              [y, z] = rotXZ(y, z, cRT, sRT);
-              const px = sp.cx + x * subR;
-              const py = cy + y * subR;
-              let a = 0.3 + 0.7 * (z + 1) * 0.5;
-              const dr = Math.sqrt((px-sp.cx)*(px-sp.cx)+(py-cy)*(py-cy)) / subR;
-              a *= Math.max(0, 1.1 - dr * 0.45);
+              const seed = PTS[i*4+3];
+              const pA = angle + seed * TAU;
+              const jitter = PTS[i*4] * 0.05 * R;
+              const pr = ring.r + jitter;
+              // Ring lies in XZ plane, then tilt around X, offset Y
+              let rx = Math.cos(pA) * pr;
+              let ry = PTS[i*4+1] * 0.04 * R;
+              let rz = Math.sin(pA) * pr;
+              [ry, rz] = rotXZ(ry, rz, cT, sT);
+              const px = cx + rx;
+              const py = cy + ring.yOff + ry;
+              const depth = rz / (ring.r * 1.1 + 1);
+              let a = 0.35 + 0.6 * (depth + 1) * 0.5;
+              // Fade particles too far from their ring center
+              const dFromCenter = Math.sqrt((px-cx)*(px-cx) + (py-cy-ring.yOff)*(py-cy-ring.yOff)) / (ring.r + R * 0.15);
+              a *= Math.max(0, 1.1 - dFromCenter * 0.3);
               dot(ctx, px, py, a);
             }
           }
