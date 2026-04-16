@@ -737,6 +737,13 @@
       width: clamp(88px, 12vw, 120px);
       height: clamp(88px, 12vw, 120px);
       pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Lift text above the canvas so animations don't clash with numbers */
+    .kpi-number, .kpi-label {
+      position: relative;
+      z-index: 1;
     }
 
     @media (max-width: 600px) {
@@ -1872,37 +1879,36 @@
 
         // ═══════════════════════════════════════════════════════
         // OTRA OPORTUNIDAD — Card 01 — DELIVERY (5 mo):
-        // Five particle rings in a pentagonal orbit. Each ring
-        // is a flat circle (not a sphere) seen in 3D, so the
-        // 5 "O" shapes are immediately readable.
+        // Five volumetric particle spheres orbiting in a pentagon.
+        // Each sphere self-rotates; alternating tilt per sphere.
         // ═══════════════════════════════════════════════════════
         if (mode === 'delivery') {
-          const orbitAngle = t * 0.0006;
-          const orbitR  = R * 0.50;  // pentagon orbit radius
-          const ringR   = R * 0.26;  // radius of each individual ring
+          const orbitA   = t * 0.0006;
+          const orbitR   = R * 0.50;   // pentagon orbit radius
+          const subR     = R * 0.24;   // each sphere radius
           const perGroup = Math.floor(N / 5);
-          const tiltA = 0.45; // tilt so rings show curvature
-          const cTilt = Math.cos(tiltA), sTilt = Math.sin(tiltA);
 
           for (let g = 0; g < 5; g++) {
-            const ga  = orbitAngle + g * TAU / 5;
-            const rcx = cx + Math.cos(ga) * orbitR;
-            const rcy = cy + Math.sin(ga) * orbitR * 0.65;
-            // Each ring spins on its own axis, alternating direction
-            const spinA = t * 0.0009 * (g % 2 === 0 ? 1 : -1) + g * 0.8;
-            const start = g * perGroup, end = Math.min(start + perGroup, N);
+            const ga  = orbitA + g * TAU / 5;
+            const gcx = cx + Math.cos(ga) * orbitR;
+            const gcy = cy + Math.sin(ga) * orbitR * 0.70; // perspective squish
+
+            // Each sphere has its own rotation axis and tilt
+            const rotA  = t * 0.0009 * (g % 2 === 0 ? 1 : -1) + g * 1.1;
+            const tiltA = 0.30 + g * 0.22;
+            const cRY = Math.cos(rotA), sRY = Math.sin(rotA);
+            const cRT = Math.cos(tiltA), sRT = Math.sin(tiltA);
+
+            const start = g * perGroup;
+            const end   = Math.min(start + perGroup, N);
 
             for (let i = start; i < end; i++) {
-              const seed = PTS[i*4+3];
-              const pA = spinA + seed * TAU;
-              const jitter = PTS[i*4] * 0.055 * R;
-              const pr = ringR + jitter;
-              let rx = Math.cos(pA) * pr;
-              let ry = PTS[i*4+1] * 0.045 * R;
-              let rz = Math.sin(pA) * pr;
-              [ry, rz] = rotXZ(ry, rz, cTilt, sTilt);
-              const px = rcx + rx, py = rcy + ry;
-              let a = 0.28 + 0.65 * (rz / (ringR * 1.1) + 1) * 0.5;
+              let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+              [x, z] = rotYZ(x, z, cRY, sRY);
+              [y, z] = rotXZ(y, z, cRT, sRT);
+              const px = gcx + x * subR;
+              const py = gcy + y * subR;
+              const a  = 0.18 + 0.82 * (z + 1) * 0.5;
               dot(ctx, px, py, a);
             }
           }
@@ -1948,13 +1954,12 @@
 
         // ═══════════════════════════════════════════════════════
         // OTRA OPORTUNIDAD — Card 03 — MANUAL (1):
-        // Dense nucleus + single outer orbital ring (no line).
-        // Simple, readable: one center, one orbit = one manual.
+        // Dense nucleus + single outer ring viewed face-on
+        // (tilt = 90° → perfect circle). Ring is thick/bold.
         // ═══════════════════════════════════════════════════════
         if (mode === 'manual') {
-          const angle = t * 0.0006;
-          const nucleusN = Math.floor(N * 0.30); // visible nucleus
-          const ringN    = N - nucleusN;
+          const angle    = t * 0.0006;
+          const nucleusN = Math.floor(N * 0.28);
 
           // Nucleus — dense dot cluster at center
           for (let i = 0; i < nucleusN; i++) {
@@ -1964,22 +1969,22 @@
             dot(ctx, px, py, a);
           }
 
-          // Single orbital ring tilted 50° — clearly visible, no line effect
-          const orbR  = R * 0.78;
-          const tilt  = 0.88; // ~50° — steep enough to see as full ring
-          const cTilt = Math.cos(tilt), sTilt = Math.sin(tilt);
+          // Outer ring — tilt = PI/2 → perfect face-on circle.
+          // Radial jitter (halfW) creates visible ring thickness.
+          const orbR = R * 0.74;
+          const halfW = R * 0.09; // ring thickness (±halfW around orbR)
 
           for (let i = nucleusN; i < N; i++) {
             const seed = PTS[i*4+3];
             const pA = angle + seed * TAU;
-            const jitter = PTS[i*4] * 0.05 * R;
-            const pr = orbR + jitter;
-            let rx = Math.cos(pA) * pr;
-            let ry = PTS[i*4+1] * 0.04 * R;
-            let rz = Math.sin(pA) * pr;
-            [ry, rz] = rotXZ(ry, rz, cTilt, sTilt);
-            const px = cx + rx, py = cy + ry;
-            let a = 0.28 + 0.68 * (rz / (orbR * 1.1) + 1) * 0.5;
+            // PTS[i*4] ranges ‑1..1, use it for radial spread
+            const pr = orbR + PTS[i*4] * halfW;
+            // At tilt=PI/2: px = cx + cos(pA)*pr, py = cy − sin(pA)*pr
+            const px = cx + Math.cos(pA) * pr;
+            const py = cy - Math.sin(pA) * pr;
+            // Alpha: brighter at ring mid-line, fades at edges
+            const radFade = 1 - Math.abs(PTS[i*4]);
+            const a = 0.35 + radFade * 0.50 + seed * 0.15;
             dot(ctx, px, py, a);
           }
           return;
