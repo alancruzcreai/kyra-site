@@ -1702,53 +1702,48 @@
         const R = size * 0.38;
         ctx.clearRect(0, 0, size, size);
 
-        // ── Every mode gets a slow base Y rotation so the sphere
-        //    always feels alive and three-dimensional. ──
-        const baseRotY = t * 0.00015;
-
-        // ── Per-mode motion parameters (POSITIONAL, not just brightness) ──
-        let extraRotY = 0, tiltX = 0, pulse = 0;
-        // clinics ring position (0-1) and promotions drift phase
-        let ringPos = -1, driftSpeed = 0;
+        // ── Per-mode motion — every sphere has clear, visible movement ──
+        let rotY = 0, tiltX = 0, pulse = 0, ringPos = -1, driftT = -1;
 
         if (mode === 'productivity') {
-          // 3× quick scale pulses (the sphere breathes outward 3 times)
+          // 3× scale pulse: the sphere breathes outward three times
+          rotY = t * 0.0003;
           const L = 3200, ph = (t % L) / L;
           if (ph < 0.55) {
             const local = (ph / 0.55) * 3;
             pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.38;
           }
         } else if (mode === 'agents') {
-          // Faster rotation + tilt = clearly spinning 3D globe
-          extraRotY = t * 0.0012;
+          // Fast rotation + tilt = clearly spinning globe
+          rotY = t * 0.0012;
           tiltX = 0.4;
         } else if (mode === 'clinics') {
-          // Sonar: ring that PUSHES particles outward as it expands
-          const L = 3200;
+          // Visible rotation + sonar displacement wave
+          rotY = t * 0.0006;
+          tiltX = 0.25;
+          const L = 2800;
           ringPos = (t % L) / L;
         } else if (mode === 'promotions') {
-          // Continuous upward drift — particles physically rise and wrap
-          driftSpeed = t * 0.00025;
+          // Visible rotation + upward particle drift
+          rotY = t * 0.0005;
+          tiltX = -0.2;
+          driftT = t * 0.0004; // drift speed
         }
 
-        const totalRotY = baseRotY + extraRotY;
         const scale = 1 + pulse;
-        const cY = Math.cos(totalRotY), sY = Math.sin(totalRotY);
-        const cT = Math.cos(tiltX),     sT = Math.sin(tiltX);
+        const cY = Math.cos(rotY), sY = Math.sin(rotY);
+        const cT = Math.cos(tiltX), sT = Math.sin(tiltX);
 
         for (let i = 0; i < N; i++) {
           let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
           const seed = PTS[i*4+3];
 
           // ── Promotions: each particle drifts upward on its own phase ──
-          if (driftSpeed > 0) {
-            // phase cycles 0→1 per particle, staggered by seed
-            const ph = (driftSpeed + seed) % 1;
-            // remap to vertical offset: bottom → top of sphere
-            y = -1 + ph * 2; // -1 to +1
-            // constrain x,z to the circle at this y-slice of the sphere
+          if (driftT >= 0) {
+            const ph = (driftT + seed) % 1;
+            y = -1 + ph * 2;
             const sliceR = Math.sqrt(Math.max(0, 1 - y * y));
-            const angle = seed * Math.PI * 2 + driftSpeed * 0.5;
+            const angle = seed * Math.PI * 2 + driftT * 0.6;
             x = Math.cos(angle) * sliceR;
             z = Math.sin(angle) * sliceR;
           }
@@ -1770,14 +1765,18 @@
           let px = cx + x * R * scale;
           let py = cy + y * R * scale;
 
-          // ── Clinics sonar: displace particles outward as ring sweeps ──
+          // ── Clinics sonar: push particles outward as ring sweeps ──
           if (ringPos >= 0) {
             const dr2d = Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy)) / R;
             const dist = Math.abs(dr2d - ringPos);
-            if (dist < 0.3) {
-              const push = (1 - dist / 0.3) * 0.18 * (1 - ringPos * 0.5);
-              px += (px - cx) / R * push * R;
-              py += (py - cy) / R * push * R;
+            // Wide band (0.45) with strong push (0.35) = clearly visible ripple
+            if (dist < 0.45) {
+              const push = (1 - dist / 0.45) * 0.35 * (1 - ringPos * 0.4);
+              const dirX = (px - cx) || 0.01;
+              const dirY = (py - cy) || 0.01;
+              const len = Math.sqrt(dirX*dirX + dirY*dirY) || 1;
+              px += (dirX / len) * push * R;
+              py += (dirY / len) * push * R;
             }
           }
 
@@ -1793,10 +1792,10 @@
             const boost = Math.max(0, 1 - band / 0.22) * (1 - ringPos) * 0.9;
             a = Math.min(1, a + boost);
           }
-          // Promotions: fade particles near the poles so the wrap is soft
-          if (driftSpeed > 0) {
-            const ph = (driftSpeed + seed) % 1;
-            const edge = Math.min(ph, 1 - ph) * 4; // 0 at poles, 1 in middle
+          // Promotions: fade particles near the poles so wrap is soft
+          if (driftT >= 0) {
+            const ph = (driftT + seed) % 1;
+            const edge = Math.min(ph, 1 - ph) * 5;
             a *= Math.min(1, edge);
           }
 
