@@ -732,12 +732,12 @@
        per card are handled in JS by the data-mode attribute. */
     .kpi-orb {
       position: absolute;
-      top: clamp(16px, 2vw, 20px);
-      right: clamp(16px, 2vw, 20px);
-      width: 50px;
-      height: 50px;
+      top: clamp(12px, 1.8vw, 18px);
+      right: clamp(12px, 1.8vw, 18px);
+      width: 56px;
+      height: 56px;
       pointer-events: none;
-      opacity: 0.95;
+      opacity: 0.92;
     }
 
     @media (max-width: 600px) {
@@ -1650,7 +1650,9 @@
 
       // Build one shared sphere point cloud. All orbs share the same
       // coordinates; only the per-frame modulation differs by mode.
-      const N = 340;
+      // Fewer particles + larger size = individual dots stay readable at
+      // 50px display so the medallion reads as "point cloud" not "gradient".
+      const N = 180;
       const PTS = new Float32Array(N * 4); // x, y, z, seed
       for (let i = 0; i < N; i++) {
         const u = Math.random();
@@ -1705,22 +1707,22 @@
         // Mode parameters
         let rotY = 0, tilt = 0, pulse = 0, ring = -1, wave = -999;
         if (mode === 'agents') {
-          rotY = t * 0.0005;
+          rotY = t * 0.0009; // a touch faster so rotation reads at 50px
           tilt = 0.35;
         } else if (mode === 'productivity') {
-          // 3 quick pulses then rest. Loop = 4s.
-          const L = 4000, ph = (t % L) / L;
+          // 3 quick pulses then rest. Loop = 3.4s.
+          const L = 3400, ph = (t % L) / L;
           if (ph < 0.55) {
             const local = (ph / 0.55) * 3;
-            pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.22;
+            pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.32;
           }
         } else if (mode === 'clinics') {
           // Sonar ring radius 0 → 1
-          const L = 3600;
+          const L = 3000;
           ring = (t % L) / L;
         } else if (mode === 'promotions') {
           // Upward brightness wave
-          const L = 4500;
+          const L = 3800;
           wave = (t % L) / L * 2.4 - 1.2; // -1.2 → +1.2
         }
 
@@ -1748,15 +1750,15 @@
           const px = cx + x * R * scale;
           const py = cy + y * R * scale;
 
-          // Depth alpha: back half dimmer
-          let a = 0.22 + 0.52 * (z + 1) * 0.5;
+          // Depth alpha: stronger contrast between front/back hemispheres
+          let a = 0.15 + 0.7 * (z + 1) * 0.5;
 
           // Soft radial fade so particles dissolve into the card bg
           const dx = (px - cx) / R;
           const dy = (py - cy) / R;
           const dr = Math.sqrt(dx*dx + dy*dy);
-          a *= Math.max(0, Math.min(1, 1.18 - dr));
-          a = Math.pow(a, 1.35);
+          a *= Math.max(0, Math.min(1, 1.1 - dr));
+          a = Math.pow(a, 1.1); // less smoothing = grainier look
 
           // Sonar boost for clinics
           if (ring >= 0) {
@@ -1775,7 +1777,8 @@
 
           if (a < 0.03) continue;
           ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;
-          ctx.fillRect(px, py, 1.1, 1.1);
+          // 1.6px dots → visible as individual grains at 50px display
+          ctx.fillRect(px - 0.3, py - 0.3, 1.6, 1.6);
         }
       }
 
