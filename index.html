@@ -1361,18 +1361,22 @@
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="5" data-suffix=" mo">0 mo</div>
                       <div class="kpi-label">Record<br>delivery time</div>
+                      <canvas class="kpi-orb" data-mode="delivery" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="4">0</div>
                       <div class="kpi-label">Departments<br>integrated</div>
+                      <canvas class="kpi-orb" data-mode="departments" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="1">0</div>
                       <div class="kpi-label">Unified operations<br>manual</div>
+                      <canvas class="kpi-orb" data-mode="manual" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                     <div class="kpi-card">
                       <div class="kpi-number" data-count="100" data-suffix="%">0%</div>
                       <div class="kpi-label">Holistic<br>implementation</div>
+                      <canvas class="kpi-orb" data-mode="holistic" width="280" height="280" aria-hidden="true"></canvas>
                     </div>
                   </div>
                 </div>
@@ -1860,6 +1864,153 @@
               // Fade at canvas edge
               const dr = Math.sqrt((px-cx)*(px-cx)+(py-cy)*(py-cy)) / R;
               a *= Math.max(0, 1.15 - dr * 0.35);
+              dot(ctx, px, py, a);
+            }
+          }
+          return;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // OTRA OPORTUNIDAD — Card 01 — DELIVERY (5 mo):
+        // Five small spheres interlocked, each rotating on its
+        // own axis. Represents "5 months of coordinated effort."
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'delivery') {
+          const orbitAngle = t * 0.0006;
+          const orbitR = R * 0.35;
+          const subR = R * 0.34;
+          const perGroup = Math.floor(N / 5);
+
+          for (let g = 0; g < 5; g++) {
+            const ga = orbitAngle + g * TAU / 5;
+            const gcx = cx + Math.cos(ga) * orbitR;
+            const gcy = cy + Math.sin(ga) * orbitR * 0.65;
+            const selfRot = t * 0.0007 + g * 1.25;
+            const cS = Math.cos(selfRot), sS = Math.sin(selfRot);
+            const tiltAngle = 0.3 + g * 0.15;
+            const cT = Math.cos(tiltAngle), sT = Math.sin(tiltAngle);
+
+            const start = g * perGroup;
+            const end = Math.min(start + perGroup, N);
+            for (let i = start; i < end; i++) {
+              let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+              [x, z] = rotYZ(x, z, cS, sS);
+              [y, z] = rotXZ(y, z, cT, sT);
+              const px = gcx + x * subR;
+              const py = gcy + y * subR;
+              let a = 0.25 + 0.6 * (z + 1) * 0.5;
+              const dr = Math.sqrt((px-gcx)*(px-gcx)+(py-gcy)*(py-gcy)) / subR;
+              a *= Math.max(0, 1.1 - dr * 0.5);
+              dot(ctx, px, py, a);
+            }
+          }
+          return;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // OTRA OPORTUNIDAD — Card 02 — DEPARTMENTS (4):
+        // Four concentric rings rotating at different speeds
+        // and directions. Each ring = one department integrated.
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'departments') {
+          const baseAngle = t * 0.0006;
+          const rings = [
+            { r: R * 0.20, speed: 1.0,  dir:  1 },
+            { r: R * 0.43, speed: 0.75, dir: -1 },
+            { r: R * 0.66, speed: 0.5,  dir:  1 },
+            { r: R * 0.89, speed: 0.3,  dir: -1 },
+          ];
+          const perRing = Math.floor(N / 4);
+
+          for (let ri = 0; ri < 4; ri++) {
+            const ring = rings[ri];
+            const angle = baseAngle * ring.speed * ring.dir;
+            const start = ri * perRing;
+            const end = Math.min(start + perRing, N);
+
+            for (let i = start; i < end; i++) {
+              const seed = PTS[i*4+3];
+              const pAngle = angle + seed * TAU;
+              const jitter = (PTS[i*4] * 0.05 + PTS[i*4+1] * 0.03) * R;
+              const pr = ring.r + jitter;
+              const px = cx + Math.cos(pAngle) * pr;
+              const py = cy + Math.sin(pAngle) * pr;
+              let a = 0.35 + seed * 0.55;
+              const dr = Math.sqrt((px-cx)*(px-cx)+(py-cy)*(py-cy)) / R;
+              a *= Math.max(0, 1.15 - dr * 0.3);
+              dot(ctx, px, py, a);
+            }
+          }
+          return;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // OTRA OPORTUNIDAD — Card 03 — MANUAL (1):
+        // One single bold ring outline made of dense particles,
+        // rotating. Represents "one unified manual."
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'manual') {
+          const angle = t * 0.0006;
+          const ringR = R * 0.7;
+          const cA = Math.cos(angle), sA = Math.sin(angle);
+          // Slight 3D tilt so the ring reads as a tilted halo
+          const tilt = 0.35;
+          const cT = Math.cos(tilt), sT = Math.sin(tilt);
+
+          for (let i = 0; i < N; i++) {
+            const seed = PTS[i*4+3];
+            // Place particle on ring circumference in 3D
+            const pAngle = seed * TAU;
+            // Tight radial jitter for a bold stroke
+            const jitter = PTS[i*4] * 0.06 * R;
+            const pr = ringR + jitter;
+            // 3D ring: x,z on circle, y=0 (flat ring)
+            let rx = Math.cos(pAngle) * pr;
+            let ry = 0 + PTS[i*4+1] * 0.04 * R; // tiny vertical noise
+            let rz = Math.sin(pAngle) * pr;
+            // Rotate ring around Y
+            [rx, rz] = rotYZ(rx, rz, cA, sA);
+            // Tilt ring around X
+            [ry, rz] = rotXZ(ry, rz, cT, sT);
+            const px = cx + rx;
+            const py = cy + ry;
+            // Depth alpha
+            let a = 0.35 + 0.65 * (rz / (ringR + R*0.06) + 1) * 0.5;
+            dot(ctx, px, py, a);
+          }
+          return;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // OTRA OPORTUNIDAD — Card 04 — HOLISTIC (100%):
+        // Two equal-sized spheres rotating independently side
+        // by side. Together = 100% holistic coverage.
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'holistic') {
+          const halfN = Math.floor(N / 2);
+          const subR = R * 0.52;
+          const gap = R * 0.38;
+          const spheres = [
+            { cx: cx - gap, rot: t * 0.0006, tilt: 0.3 },
+            { cx: cx + gap, rot: -t * 0.0006, tilt: -0.25 },
+          ];
+
+          for (let s = 0; s < 2; s++) {
+            const sp = spheres[s];
+            const cRY = Math.cos(sp.rot), sRY = Math.sin(sp.rot);
+            const cRT = Math.cos(sp.tilt), sRT = Math.sin(sp.tilt);
+            const start = s * halfN;
+            const end = start + halfN;
+
+            for (let i = start; i < end; i++) {
+              let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+              [x, z] = rotYZ(x, z, cRY, sRY);
+              [y, z] = rotXZ(y, z, cRT, sRT);
+              const px = sp.cx + x * subR;
+              const py = cy + y * subR;
+              let a = 0.3 + 0.7 * (z + 1) * 0.5;
+              const dr = Math.sqrt((px-sp.cx)*(px-sp.cx)+(py-cy)*(py-cy)) / subR;
+              a *= Math.max(0, 1.1 - dr * 0.45);
               dot(ctx, px, py, a);
             }
           }
