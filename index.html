@@ -1696,114 +1696,174 @@
         };
       });
 
+      // ── Shared helpers ──
+      const DOT = 1.3;       // dot radius
+      const TAU = 6.2831853; // 2π
+      function dot(ctx, px, py, a) {
+        if (a < 0.03) return;
+        ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;
+        ctx.beginPath();
+        ctx.arc(px, py, DOT, 0, TAU);
+        ctx.fill();
+      }
+      // Rotate point (x,z) around Y axis
+      function rotYZ(x, z, c, s) { return [c*x + s*z, -s*x + c*z]; }
+      // Rotate point (y,z) around X axis
+      function rotXZ(y, z, c, s) { return [c*y - s*z, s*y + c*z]; }
+
       function drawOrb(o, t) {
         const { ctx, size, mode } = o;
         const cx = size / 2, cy = size / 2;
         const R = size * 0.38;
         ctx.clearRect(0, 0, size, size);
 
-        // ── Per-mode motion — every sphere has clear, visible movement ──
-        let rotY = 0, tiltX = 0, pulse = 0, ringPos = -1, driftT = -1;
-
+        // ═══════════════════════════════════════════════════════
+        // Card 01 — PRODUCTIVITY (3x): Growth from small → big
+        // Sphere scales from 0.2 → 1.0, then resets. Represents
+        // "tripling" — starts small, ends 3× larger.
+        // ═══════════════════════════════════════════════════════
         if (mode === 'productivity') {
-          // 3× scale pulse: the sphere breathes outward three times
-          rotY = t * 0.0003;
-          const L = 3200, ph = (t % L) / L;
-          if (ph < 0.55) {
-            const local = (ph / 0.55) * 3;
-            pulse = Math.sin((local - Math.floor(local)) * Math.PI) * 0.38;
+          const L = 2800; // same loop as clinics
+          const ph = (t % L) / L;
+          // Ease-out growth: starts fast, decelerates at full size
+          const grow = 0.2 + 0.8 * (1 - Math.pow(1 - ph, 2.5));
+          const rotAngle = t * 0.0006;
+          const tilt = 0.25;
+          const cYr = Math.cos(rotAngle), sYr = Math.sin(rotAngle);
+          const cTr = Math.cos(tilt), sTr = Math.sin(tilt);
+          const sr = R * grow;
+
+          for (let i = 0; i < N; i++) {
+            let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+            [x, z] = rotYZ(x, z, cYr, sYr);
+            [y, z] = rotXZ(y, z, cTr, sTr);
+            const px = cx + x * sr;
+            const py = cy + y * sr;
+            let a = 0.3 + 0.7 * (z + 1) * 0.5;
+            const dr = Math.sqrt((px-cx)*(px-cx)+(py-cy)*(py-cy)) / sr;
+            a *= Math.max(0, 1.15 - dr * 0.5);
+            dot(ctx, px, py, a);
           }
-        } else if (mode === 'agents') {
-          // Fast rotation + tilt = clearly spinning globe
-          rotY = t * 0.0012;
-          tiltX = 0.4;
-        } else if (mode === 'clinics') {
-          // Visible rotation + sonar displacement wave
-          rotY = t * 0.0006;
-          tiltX = 0.25;
-          const L = 2800;
-          ringPos = (t % L) / L;
-        } else if (mode === 'promotions') {
-          // Visible rotation + upward particle drift
-          rotY = t * 0.0005;
-          tiltX = -0.2;
-          driftT = t * 0.0004; // drift speed
+          return;
         }
 
-        const scale = 1 + pulse;
-        const cY = Math.cos(rotY), sY = Math.sin(rotY);
-        const cT = Math.cos(tiltX), sT = Math.sin(tiltX);
+        // ═══════════════════════════════════════════════════════
+        // Card 02 — AGENTS (40+): Four mini-spheres orbiting
+        // within the same footprint. Represents "many teams
+        // coordinating in shared space."
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'agents') {
+          const orbitAngle = t * 0.0006; // same speed as clinics
+          const orbitR = R * 0.42;       // orbit distance from center
+          const subR  = R * 0.38;        // each sub-sphere radius
+          const perGroup = Math.floor(N / 4);
 
-        for (let i = 0; i < N; i++) {
-          let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
-          const seed = PTS[i*4+3];
+          for (let g = 0; g < 4; g++) {
+            // Each of 4 groups orbits at 90° intervals
+            const ga = orbitAngle + g * TAU / 4;
+            // Sub-sphere center (slight Y squash for perspective)
+            const gcx = cx + Math.cos(ga) * orbitR;
+            const gcy = cy + Math.sin(ga) * orbitR * 0.65;
+            // Each sub-sphere also self-rotates
+            const selfRot = t * 0.0008 + g * 1.2;
+            const cS = Math.cos(selfRot), sS = Math.sin(selfRot);
+            const cT = Math.cos(0.3), sT = Math.sin(0.3);
 
-          // ── Promotions: each particle drifts upward on its own phase ──
-          if (driftT >= 0) {
-            const ph = (driftT + seed) % 1;
-            y = -1 + ph * 2;
-            const sliceR = Math.sqrt(Math.max(0, 1 - y * y));
-            const angle = seed * Math.PI * 2 + driftT * 0.6;
-            x = Math.cos(angle) * sliceR;
-            z = Math.sin(angle) * sliceR;
-          }
-
-          // ── Y-axis rotation (shared base + per-mode extra) ──
-          {
-            const nx =  cY * x + sY * z;
-            const nz = -sY * x + cY * z;
-            x = nx; z = nz;
-          }
-          // ── X-axis tilt (agents) ──
-          if (tiltX !== 0) {
-            const ny =  cT * y - sT * z;
-            const nz =  sT * y + cT * z;
-            y = ny; z = nz;
-          }
-
-          // ── Project to 2D ──
-          let px = cx + x * R * scale;
-          let py = cy + y * R * scale;
-
-          // ── Clinics sonar: push particles outward as ring sweeps ──
-          if (ringPos >= 0) {
-            const dr2d = Math.sqrt((px-cx)*(px-cx) + (py-cy)*(py-cy)) / R;
-            const dist = Math.abs(dr2d - ringPos);
-            // Wide band (0.45) with strong push (0.35) = clearly visible ripple
-            if (dist < 0.45) {
-              const push = (1 - dist / 0.45) * 0.35 * (1 - ringPos * 0.4);
-              const dirX = (px - cx) || 0.01;
-              const dirY = (py - cy) || 0.01;
-              const len = Math.sqrt(dirX*dirX + dirY*dirY) || 1;
-              px += (dirX / len) * push * R;
-              py += (dirY / len) * push * R;
+            const start = g * perGroup;
+            const end = start + perGroup;
+            for (let i = start; i < end; i++) {
+              let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+              [x, z] = rotYZ(x, z, cS, sS);
+              [y, z] = rotXZ(y, z, cT, sT);
+              const px = gcx + x * subR;
+              const py = gcy + y * subR;
+              let a = 0.25 + 0.65 * (z + 1) * 0.5;
+              const dr = Math.sqrt((px-gcx)*(px-gcx)+(py-gcy)*(py-gcy)) / subR;
+              a *= Math.max(0, 1.1 - dr * 0.5);
+              dot(ctx, px, py, a);
             }
           }
+          return;
+        }
 
-          // ── Alpha: depth + radial fade ──
-          let a = 0.3 + 0.7 * (z + 1) * 0.5;
-          const fdx = (px - cx) / R, fdy = (py - cy) / R;
-          const fdr = Math.sqrt(fdx*fdx + fdy*fdy);
-          a *= Math.max(0, Math.min(1, 1.15 - fdr * 0.5));
+        // ═══════════════════════════════════════════════════════
+        // Card 03 — CLINICS (150+): Sonar sphere (UNCHANGED)
+        // Rotating sphere with radial displacement wave.
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'clinics') {
+          const rotAngle = t * 0.0006;
+          const tilt = 0.25;
+          const L = 2800;
+          const ringPos = (t % L) / L;
+          const cYr = Math.cos(rotAngle), sYr = Math.sin(rotAngle);
+          const cTr = Math.cos(tilt), sTr = Math.sin(tilt);
 
-          // Sonar brightness boost on the ring itself
-          if (ringPos >= 0) {
+          for (let i = 0; i < N; i++) {
+            let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+            [x, z] = rotYZ(x, z, cYr, sYr);
+            [y, z] = rotXZ(y, z, cTr, sTr);
+            let px = cx + x * R;
+            let py = cy + y * R;
+            // Sonar displacement
+            const dr2d = Math.sqrt((px-cx)*(px-cx)+(py-cy)*(py-cy)) / R;
+            const dist = Math.abs(dr2d - ringPos);
+            if (dist < 0.45) {
+              const push = (1 - dist / 0.45) * 0.35 * (1 - ringPos * 0.4);
+              const dx = (px - cx) || 0.01, dy = (py - cy) || 0.01;
+              const len = Math.sqrt(dx*dx + dy*dy) || 1;
+              px += (dx / len) * push * R;
+              py += (dy / len) * push * R;
+            }
+            let a = 0.3 + 0.7 * (z + 1) * 0.5;
+            const fdr = Math.sqrt((px-cx)*(px-cx)+(py-cy)*(py-cy)) / R;
+            a *= Math.max(0, 1.15 - fdr * 0.5);
+            // Ring brightness boost
             const band = Math.abs(fdr - ringPos);
             const boost = Math.max(0, 1 - band / 0.22) * (1 - ringPos) * 0.9;
             a = Math.min(1, a + boost);
+            dot(ctx, px, py, a);
           }
-          // Promotions: fade particles near the poles so wrap is soft
-          if (driftT >= 0) {
-            const ph = (driftT + seed) % 1;
-            const edge = Math.min(ph, 1 - ph) * 5;
-            a *= Math.min(1, edge);
-          }
+          return;
+        }
 
-          if (a < 0.03) continue;
-          ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a.toFixed(3)})`;
-          ctx.beginPath();
-          ctx.arc(px, py, 1.3, 0, 6.283);
-          ctx.fill();
+        // ═══════════════════════════════════════════════════════
+        // Card 04 — PROMOTIONS (3): Three concentric rings
+        // rotating. Each ring = one promotion. They orbit at
+        // different speeds/directions within the same circle.
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'promotions') {
+          const baseAngle = t * 0.0006; // clinics speed
+          const rings = [
+            { r: R * 0.28, speed: 1.0,  dir:  1 }, // inner ring
+            { r: R * 0.58, speed: 0.65, dir: -1 }, // middle ring
+            { r: R * 0.88, speed: 0.4,  dir:  1 }, // outer ring
+          ];
+          const perRing = Math.floor(N / 3);
+
+          for (let ri = 0; ri < 3; ri++) {
+            const ring = rings[ri];
+            const angle = baseAngle * ring.speed * ring.dir;
+            const start = ri * perRing;
+            const end = Math.min(start + perRing, N);
+
+            for (let i = start; i < end; i++) {
+              const seed = PTS[i*4+3];
+              // Each particle sits on the ring circumference
+              const pAngle = angle + seed * TAU;
+              // Slight radial jitter so it's not a perfect hairline
+              const jitter = (PTS[i*4] * 0.06 + PTS[i*4+1] * 0.04) * R;
+              const pr = ring.r + jitter;
+              const px = cx + Math.cos(pAngle) * pr;
+              const py = cy + Math.sin(pAngle) * pr;
+              // Alpha: vary by seed for organic texture
+              let a = 0.35 + seed * 0.55;
+              // Fade at canvas edge
+              const dr = Math.sqrt((px-cx)*(px-cx)+(py-cy)*(py-cy)) / R;
+              a *= Math.max(0, 1.15 - dr * 0.35);
+              dot(ctx, px, py, a);
+            }
+          }
+          return;
         }
       }
 
