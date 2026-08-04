@@ -1275,10 +1275,67 @@
 
       <div class="project-list">
 
-        <!-- PROJECT 01 — LASERAWAY -->
+        <!-- PROJECT 01 — EXMACHINA -->
         <div class="project-item reveal">
           <div class="project-header" role="button" tabindex="0" aria-expanded="false">
             <span class="project-number">01</span>
+            <h3 class="project-title">ExMachina</h3>
+            <div class="project-toggle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </div>
+          </div>
+          <div class="project-body">
+            <div class="project-body-inner">
+              <div class="project-meta">
+                <span class="project-tag">Co-Founder</span>
+                <span class="project-tag">Delivery Management</span>
+                <span class="project-tag">Agile Operations</span>
+                <span class="project-tag">Client Relations</span>
+                <span class="project-tag">Software Development</span>
+                <span class="project-tag">2026 — Present</span>
+              </div>
+
+              <div class="project-layout">
+                <div class="project-image-wrapper">
+                  <div class="project-image-overlay">
+                    <span class="project-image-label">End-to-End Delivery &amp; Operations</span>
+                  </div>
+                </div>
+
+                <div class="project-details">
+                  <p class="body-text project-description">
+                    Co-founded and currently lead delivery operations at ExMachina, a digital consultancy building custom AI-powered tools for people and businesses, with a delivery framework built to work across any industry.
+                  </p>
+                  <p class="body-text project-description">
+                    Serve as the operational backbone of the practice: the single point of contact between the technical team and every client, from kickoff through final delivery. Own the full delivery lifecycle across simultaneous projects — sprint planning, scope management, stakeholder communication, quality review, and escalation handling.
+                  </p>
+                  <p class="body-text project-description">
+                    Designed and built the internal systems that run the consultancy from the ground up — a custom project management platform, a formal change management framework, and a full operations manual with documented, repeatable pipelines for every service offered: branding, web design, and software development.
+                  </p>
+                  <p class="body-text project-description">
+                    Projects run on a disciplined 5-business-day sprint cadence and ship on a formal 60-day delivery cycle. A lean operation that delivers with the structure and discipline of a full PMO.
+                  </p>
+
+                  <div class="kpi-grid">
+                    <div class="kpi-card">
+                      <div class="kpi-number" data-symbol="∞">∞</div>
+                      <div class="kpi-label">Industries<br>served</div>
+                      <canvas class="kpi-orb" data-mode="industries" width="280" height="280" aria-hidden="true"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROJECT 02 — LASERAWAY -->
+        <div class="project-item reveal">
+          <div class="project-header" role="button" tabindex="0" aria-expanded="false">
+            <span class="project-number">02</span>
             <h3 class="project-title">LaserAway</h3>
             <div class="project-toggle">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1340,10 +1397,10 @@
           </div>
         </div>
 
-        <!-- PROJECT 02 — OTRA OPORTUNIDAD -->
+        <!-- PROJECT 03 — OTRA OPORTUNIDAD -->
         <div class="project-item reveal">
           <div class="project-header" role="button" tabindex="0" aria-expanded="false">
-            <span class="project-number">02</span>
+            <span class="project-number">03</span>
             <h3 class="project-title">Otra Oportunidad, A.C.</h3>
             <div class="project-toggle">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1587,6 +1644,7 @@
 
     // ——— KPI Counter Animation ———
     function animateCounters(container) {
+      // Numeric counters
       container.querySelectorAll('.kpi-number[data-count]').forEach(el => {
         const target = parseInt(el.dataset.count);
         const suffix = el.dataset.suffix || '';
@@ -1596,17 +1654,23 @@
         function update(now) {
           const elapsed = now - start;
           const progress = Math.min(elapsed / duration, 1);
-          // Ease out cubic
           const eased = 1 - Math.pow(1 - progress, 3);
           const current = Math.round(eased * target);
           el.textContent = current + suffix;
-
-          if (progress < 1) {
-            requestAnimationFrame(update);
-          }
+          if (progress < 1) requestAnimationFrame(update);
         }
-
         requestAnimationFrame(update);
+      });
+
+      // Symbol counters (e.g. ∞) — same entrance timing, fade + scale in
+      container.querySelectorAll('.kpi-number[data-symbol]').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'scale(0.6)';
+        el.style.transition = 'opacity 0.8s cubic-bezier(0.23,1,0.32,1), transform 0.8s cubic-bezier(0.23,1,0.32,1)';
+        requestAnimationFrame(() => {
+          el.style.opacity = '1';
+          el.style.transform = 'scale(1)';
+        });
       });
     }
 
@@ -2037,6 +2101,30 @@
               a *= Math.max(0, 1.12 - dr * 0.45);
               dot(ctx, px, py, a);
             }
+          }
+          return;
+        }
+
+        // ═══════════════════════════════════════════════════════
+        // EXMACHINA — Card ∞ — INDUSTRIES:
+        // Full sphere continuously rotating — representing every
+        // industry. Single dense globe, no division, no limit.
+        // ═══════════════════════════════════════════════════════
+        if (mode === 'industries') {
+          const rotA  = t * 0.0006;
+          const tiltA = t * 0.00022;
+          const cRY = Math.cos(rotA),  sRY = Math.sin(rotA);
+          const cRT = Math.cos(tiltA), sRT = Math.sin(tiltA);
+
+          for (let i = 0; i < N; i++) {
+            let x = PTS[i*4], y = PTS[i*4+1], z = PTS[i*4+2];
+            const seed = PTS[i*4+3];
+            [x, z] = rotYZ(x, z, cRY, sRY);
+            [y, z] = rotXZ(y, z, cRT, sRT);
+            const px = cx + x * R;
+            const py = cy + y * R;
+            const a  = 0.12 + 0.78 * (z + 1) * 0.5 + seed * 0.10;
+            dot(ctx, px, py, a);
           }
           return;
         }
