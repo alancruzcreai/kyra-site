@@ -493,6 +493,9 @@ ul { list-style: none; }
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
+.cv-sidebar .achievements-grid {
+  grid-template-columns: 1fr;
+}
 .achievement-card {
   background: var(--surface-2);
   border: 1px solid var(--border);
